@@ -1,15 +1,12 @@
 {
-  "name": "SOPilot — AI SOP Builder",
+  "name": "SOPilot",
   "short_name": "SOPilot",
-  "description": "Turn any business process into a professional Standard Operating Procedure in minutes, powered by AI.",
-  "start_url": "/sopilot/",
-  "scope": "/sopilot/",
+  "description": "SOPilot - Your Security Operations Assistant",
+  "start_url": "/",
   "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "orientation": "portrait",
-  "background_color": "#F5F0E8",
-  "theme_color": "#0F0E0C",
-  "categories": ["business", "productivity", "utilities"],
-  "lang": "en-US",
   "icons": [
     {
       "src": "logo-192.png",
@@ -23,8 +20,5 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ],
-  "screenshots": [],
-  "related_applications": [],
-  "prefer_related_applications": false
+  ]
 }
