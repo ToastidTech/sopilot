@@ -2,7 +2,7 @@
 // Toastid Tech LLC · sopilot-v1
 // Cache-first strategy for offline capability
 
-const CACHE_NAME = 'sopilot-v1';
+const CACHE_NAME = 'sopilot-v2';
 
 const STATIC_ASSETS = [
   '/sopilot/',
