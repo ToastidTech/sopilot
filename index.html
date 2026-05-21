@@ -1679,57 +1679,35 @@ function copyPlaintext() {
   navigator.clipboard.writeText(txt).then(() => showToast('✓ Copied to clipboard'));
 }
 
-// ─── Reset ───────────────────────────────────────
-function reset() {
-  if (!confirm('Start a new SOP? Your current document will be cleared.')) return;
-  location.reload();
-}
-
-// ─── Utilities ───────────────────────────────────
-function val(id) { return document.getElementById(id)?.value?.trim() || ''; }
-
-function shake(id) {
-  const el = document.getElementById(id);
-  el.style.animation = 'none';
-  el.getBoundingClientRect();
-  el.style.animation = 'shake 0.35s ease';
-  setTimeout(() => el.style.animation = '', 400);
-}
-
-function autoSize(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 80) + 'px';
-}
-
-let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
-}
-
-// CSS shake animation
-const style = document.createElement('style');
-style.textContent = `@keyframes shake {
-  0%,100%{transform:translateX(0)}
-  20%{transform:translateX(-6px)}
-  40%{transform:translateX(6px)}
-  60%{transform:translateX(-4px)}
-  80%{transform:translateX(4px)}
-}`;
-document.head.appendChild(style);
-</script>
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .then(reg => console.log('[SOPilot] SW registered:', reg.scope))
-      .catch(err => console.warn('[SOPilot] SW failed:', err));
+// ─── Download SOP ────────────────────────────────
+function downloadSOP() {
+  if (!sopData) return;
+  
+  // Build text content
+  let txt = `${sopData.title}\n${'='.repeat(sopData.title.length)}\n\n`;
+  txt += `PURPOSE: ${sopData.purpose}\nSCOPE: ${sopData.scope}\n\n`;
+  sopData.sections.forEach((sec, i) => {
+    txt += `${i+1}. ${sec.name}\n${'-'.repeat(sec.name.length+3)}\n`;
+    if (sec.intro) txt += `${sec.intro}\n\n`;
+    sec.steps.forEach((s,j) => {
+      txt += `  ${j+1}. [${s.role}] ${s.text}\n`;
+      if (s.note) txt += `     💡 ${s.note}\n`;
+    });
+    txt += '\n';
   });
+  
+  // Create and trigger download
+  const blob = new Blob([txt], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${sopData.title.replace(/[^a-z0-9]/gi, '_')}_SOP.txt`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 100);
+  
+  showToast('✓ SOP downloaded');
 }
-</script>
-</body>
-</html>
