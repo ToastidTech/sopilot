@@ -82,37 +82,4 @@ self.addEventListener('fetch', event => {
         }
         const clone = response.clone();
         caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
-        return response;
-      });
-    }).catch(() => {
-      // Offline fallback
-      if (request.mode === 'navigate') {
-        return caches.match('/sopilot/index.html');
-      }
-    function downloadSOP(content, filename) {
-    // Create blob
-    const blob = new Blob([content], { type: 'text/plain' });
-    
-    // Create download link
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename || 'SOP.txt';
-    
-    // Trigger download
-    document.body.appendChild(a);
-    a.click();
-    
-    // Cleanup
-    setTimeout(() => {
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }, 100);
-}
-
-// Your Generate SOP button click:
-generateButton.addEventListener('click', function() {
-    const sopContent = "Your generated SOP content here...";
-    const filename = `SOP_${Date.now()}.txt`;
-    downloadSOP(sopContent, filename);
 });
