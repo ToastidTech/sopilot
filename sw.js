@@ -1,8 +1,8 @@
 8px// ─── SOPilot Service Worker ───────────────────────────────────────────────
-// Toastid Tech LLC · sopilot-v3
+// Toastid Tech LLC · sopilot-v4
 // Cache-first strategy for offline capability
 
-const CACHE_NAME = 'sopilot-v3';
+const CACHE_NAME = 'sopilot-v4';
 
 const STATIC_ASSETS = [
   '/sopilot/',
