@@ -66,20 +66,27 @@ self.addEventListener('fetch', event => {
           const clone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
           return response;
-        })
+        }
         .catch(() => caches.match(request))
     );
     return;
   }
 
-  // Cache-first for everything else
+  // Cache-first 
   event.respondWith(
-    caches.match(request).then(cached => {
-      if (cached) return cached;
-      return fetch(request).then(response => {
-        if (!response || response.status !== 200 || response.type === 'opaque') {
-          return response;
-        }
+  caches.match(request).then(cached => {
+    if (cached) return cached;
+    return fetch(request).then(response => {
+      if (!response || response.status !== 200 || response.type === 'opaque') {
+        return response;
+      }
+      const clone = response.clone();
+      caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
+      return response; // Add this line to return the network response
+    });
+  })
+);
+
         const clone = response.clone();
         caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
 });
