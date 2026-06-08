@@ -1,1713 +1,335 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>SOPilot — AI SOP Builder</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0F0E0C">
-<link rel="apple-touch-icon" href="logo-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="SOPilot">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,300&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SOPilot | Neural Control Core</title>
+
 <style>
-:root {
-  --ink:     #0F0E0C;
-  --ink2:    #1C1A16;
-  --paper:   #F5F0E8;
-  --paper2:  #EDE7D9;
-  --paper3:  #E3DAC8;
-  --gold:    #C8943A;
-  --gold2:   #E8B054;
-  --green:   #2D6A4F;
-  --green2:  #52B788;
-  --red:     #C1440E;
-  --muted:   #7A7060;
-  --muted2:  #AEA590;
-  --rule:    rgba(15,14,12,0.12);
-  --shadow:  0 2px 12px rgba(15,14,12,0.12), 0 1px 3px rgba(15,14,12,0.08);
-  --shadow2: 0 8px 40px rgba(15,14,12,0.16), 0 2px 8px rgba(15,14,12,0.1);
-  --ff:  'Fraunces', serif;
-  --fb:  'DM Sans', sans-serif;
-  --fm:  'DM Mono', monospace;
+:root{
+  --bg:#070A12;
+  --panel:rgba(18,24,40,0.55);
+  --glass:rgba(255,255,255,0.05);
+  --stroke:rgba(80,170,255,0.25);
+  --blue:#3aa0ff;
+  --blue2:#66d1ff;
+  --text:#eaf2ff;
+  --muted:#8ea2c0;
+}
+
+*{
+  box-sizing:border-box;
+  font-family:system-ui,Segoe UI,Roboto,Arial;
+}
+
+body{
+  margin:0;
+  background: radial-gradient(circle at top, #0d1a33, var(--bg));
+  color:var(--text);
+  overflow-x:hidden;
+}
+
+/* ===== SHIELD BACKGROUND GLOW ===== */
+.bg-orb{
+  position:fixed;
+  width:600px;
+  height:600px;
+  background: radial-gradient(circle, rgba(58,160,255,0.25), transparent 60%);
+  filter: blur(40px);
+  animation: float 10s ease-in-out infinite;
+  z-index:0;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{height:100%;scroll-behavior:smooth}
 
-body {
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--fb);
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  position: relative;
-}
-
-/* ── Paper texture overlay ── */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 1000;
-  opacity: 0.6;
-}
-
-/* ── Ruled lines background ── */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: repeating-linear-gradient(
-    transparent, transparent 27px,
-    rgba(15,14,12,0.055) 27px, rgba(15,14,12,0.055) 28px
-  );
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ══════════════════════════════
-   HEADER / BRAND BAR
-══════════════════════════════ */
-header {
-  position: relative;
-  z-index: 100;
-  background: var(--ink);
-  padding: 0 18px;
-  height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-  box-shadow: 0 2px 16px rgba(15,14,12,0.4);
-}
-
-.brand {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-}
-
-.brand-name {
-  font-family: var(--ff);
-  font-size: 22px;
-  font-weight: 900;
-  color: var(--paper);
-  letter-spacing: -0.5px;
-  line-height: 1;
-}
-
-.brand-name span { color: var(--gold2); }
-
-.brand-tag {
-  font-family: var(--fm);
-  font-size: 9px;
-  color: var(--muted2);
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  margin-left: 2px;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.badge {
-  font-family: var(--fm);
-  font-size: 9px;
-  padding: 3px 9px;
-  border-radius: 99px;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-.badge-gold {
-  background: rgba(200,148,58,0.2);
-  border: 1px solid rgba(200,148,58,0.4);
-  color: var(--gold2);
-}
-
-.badge-green {
-  background: rgba(45,106,79,0.25);
-  border: 1px solid rgba(82,183,136,0.35);
-  color: var(--green2);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.live-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--green2);
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%,100% { opacity: 1; box-shadow: 0 0 4px var(--green2); }
-  50% { opacity: 0.3; box-shadow: none; }
-}
-
-/* ══════════════════════════════
-   MAIN LAYOUT
-══════════════════════════════ */
-.app {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  position: relative;
-  z-index: 1;
-}
-
-/* ── Stage selector tabs ── */
-.stage-bar {
-  display: flex;
-  background: var(--ink2);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  flex-shrink: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.stage-bar::-webkit-scrollbar { display: none; }
-
-.stage-tab {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 10px 16px;
-  font-family: var(--fm);
-  font-size: 10px;
-  color: rgba(245,240,232,0.35);
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  white-space: nowrap;
-  transition: all 0.2s;
-  flex-shrink: 0;
-}
-
-.stage-tab.active {
-  color: var(--gold2);
-  border-bottom-color: var(--gold);
-  background: rgba(200,148,58,0.06);
-}
-
-.stage-tab.done {
-  color: var(--green2);
-}
-
-.stage-num {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  border: 1px solid currentColor;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 9px;
-  flex-shrink: 0;
-}
-
-.stage-tab.done .stage-num {
-  background: var(--green2);
-  border-color: var(--green2);
-  color: #fff;
-}
-
-/* ══════════════════════════════
-   SCROLL AREA
-══════════════════════════════ */
-.scroll-area {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px 16px 100px;
-  scroll-behavior: smooth;
-}
-.scroll-area::-webkit-scrollbar { width: 4px; }
-.scroll-area::-webkit-scrollbar-track { background: transparent; }
-.scroll-area::-webkit-scrollbar-thumb { background: var(--paper3); border-radius: 99px; }
-
-/* ══════════════════════════════
-   SECTION CARDS
-══════════════════════════════ */
-.section { display: none; }
-.section.active { display: block; animation: fadeSlide 0.3s ease; }
-@keyframes fadeSlide {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ── Hero intro card ── */
-.hero-card {
-  background: var(--ink);
-  border-radius: 16px;
-  padding: 24px 20px;
-  margin-bottom: 16px;
-  position: relative;
-  overflow: hidden;
-}
-
-.hero-card::before {
-  content: '';
-  position: absolute;
-  top: -60px; right: -60px;
-  width: 200px; height: 200px;
-  background: radial-gradient(circle, rgba(200,148,58,0.15), transparent 70%);
-  pointer-events: none;
-}
-
-.hero-eyebrow {
-  font-family: var(--fm);
-  font-size: 9px;
-  color: var(--gold2);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-}
-
-.hero-title {
-  font-family: var(--ff);
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--paper);
-  line-height: 1.2;
-  letter-spacing: -0.3px;
-  margin-bottom: 10px;
-}
-
-.hero-title em {
-  font-style: italic;
-  color: var(--gold2);
-}
-
-.hero-sub {
-  font-size: 13px;
-  color: var(--muted2);
-  line-height: 1.65;
-  margin-bottom: 18px;
-}
-
-.feature-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.fchip {
-  font-family: var(--fm);
-  font-size: 9.5px;
-  padding: 4px 10px;
-  border-radius: 99px;
-  border: 1px solid rgba(245,240,232,0.12);
-  color: var(--muted2);
-  letter-spacing: 0.3px;
-}
-
-/* ── Card base ── */
-.card {
-  background: #fff;
-  border-radius: 14px;
-  border: 1px solid var(--rule);
-  box-shadow: var(--shadow);
-  margin-bottom: 14px;
-  overflow: hidden;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--rule);
-  background: var(--paper2);
-}
-
-.card-label {
-  font-family: var(--fm);
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--muted);
-}
-
-.card-title {
-  font-family: var(--ff);
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--ink);
-}
-
-.card-body {
-  padding: 16px;
-}
-
-/* ── Input fields ── */
-.field {
-  margin-bottom: 14px;
-}
-
-.field-label {
-  font-family: var(--fm);
-  font-size: 9.5px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--muted);
-  margin-bottom: 6px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.field-req {
-  color: var(--red);
-  font-size: 10px;
-}
-
-input[type="text"],
-textarea,
-select {
-  width: 100%;
-  background: var(--paper);
-  border: 1.5px solid var(--paper3);
-  border-radius: 9px;
-  padding: 10px 12px;
-  font-family: var(--fb);
-  font-size: 14px;
-  color: var(--ink);
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  -webkit-appearance: none;
-}
-
-input[type="text"]:focus,
-textarea:focus,
-select:focus {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(200,148,58,0.12);
-  background: #fff;
-}
-
-textarea {
-  resize: none;
-  line-height: 1.6;
-  min-height: 90px;
-}
-
-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A7060' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 34px;
-  cursor: pointer;
-}
-
-/* ── Tag selector ── */
-.tag-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-}
+.orb1{ top:-200px; left:-200px; }
+.orb2{ bottom:-200px; right:-200px; animation-delay:2s; }
 
-.tag {
-  padding: 6px 13px;
-  border-radius: 99px;
-  border: 1.5px solid var(--paper3);
-  background: var(--paper);
-  font-size: 12.5px;
-  color: var(--muted);
-  cursor: pointer;
-  transition: all 0.18s;
-  font-family: var(--fb);
+@keyframes float{
+  0%,100%{ transform:translateY(0px) }
+  50%{ transform:translateY(30px) }
 }
 
-.tag.selected {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--paper);
+/* ===== HEADER ===== */
+header{
+  position:sticky;
+  top:0;
+  z-index:10;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 18px;
+  backdrop-filter: blur(18px);
+  background: rgba(10,14,25,0.6);
+  border-bottom:1px solid var(--stroke);
 }
 
-.tag:hover:not(.selected) {
-  border-color: var(--gold);
-  color: var(--gold);
+.logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
 }
 
-/* ── Role row ── */
-.role-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  background: var(--paper);
-  border-radius: 8px;
-  margin-bottom: 7px;
-  border: 1px solid var(--rule);
-  animation: roleIn 0.2s ease;
+.logo img{
+  width:42px;
+  height:42px;
+  border-radius:10px;
+  box-shadow:0 0 18px rgba(58,160,255,0.5);
 }
-@keyframes roleIn { from { opacity:0; transform:translateX(-8px); } to { opacity:1; transform:translateX(0); } }
 
-.role-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 7px;
-  background: linear-gradient(135deg, var(--gold), var(--gold2));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  flex-shrink: 0;
+.brand{
+  font-weight:700;
+  letter-spacing:2px;
 }
 
-.role-name {
-  flex: 1;
-  font-size: 13px;
-  color: var(--ink);
-  font-weight: 500;
+.tier{
+  padding:6px 12px;
+  border-radius:999px;
+  border:1px solid var(--stroke);
+  color:var(--blue2);
+  background:rgba(58,160,255,0.08);
+  font-size:12px;
 }
 
-.role-del {
-  width: 24px;
-  height: 24px;
-  border: none;
-  background: transparent;
-  color: var(--muted2);
-  cursor: pointer;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 5px;
-  transition: all 0.15s;
+/* ===== HERO SHIELD CORE ===== */
+.hero{
+  text-align:center;
+  padding:40px 20px 10px;
+  position:relative;
+  z-index:2;
 }
-.role-del:hover { background: rgba(193,68,14,0.1); color: var(--red); }
 
-.add-role-row {
-  display: flex;
-  gap: 8px;
+.shield-core{
+  width:140px;
+  height:140px;
+  margin:0 auto;
+  border-radius:50%;
+  border:2px solid var(--stroke);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  box-shadow:0 0 40px rgba(58,160,255,0.25);
+  animation:pulse 3s infinite ease-in-out;
 }
 
-.add-role-row input { flex: 1; }
-
-/* ── Primary button ── */
-.btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 13px 20px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-family: var(--ff);
-  font-size: 15px;
-  font-weight: 700;
-  transition: all 0.2s;
-  letter-spacing: -0.2px;
-}
-
-.btn-primary {
-  background: var(--ink);
-  color: var(--paper);
-  box-shadow: 0 4px 16px rgba(15,14,12,0.25), inset 0 1px 0 rgba(255,255,255,0.08);
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: var(--ink2);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(15,14,12,0.3), inset 0 1px 0 rgba(255,255,255,0.08);
-}
-
-.btn-primary:active { transform: translateY(0); }
-
-.btn-primary:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.btn-ghost {
-  background: transparent;
-  border: 1.5px solid var(--paper3);
-  color: var(--muted);
-  font-size: 13px;
-  padding: 10px 16px;
-}
-
-.btn-ghost:hover { border-color: var(--ink); color: var(--ink); }
-
-.btn-gold {
-  background: linear-gradient(135deg, var(--gold), var(--gold2));
-  color: #fff;
-  box-shadow: 0 4px 16px rgba(200,148,58,0.35);
-}
-
-.btn-gold:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(200,148,58,0.45); }
-
-.btn-sm {
-  width: auto;
-  padding: 8px 14px;
-  font-size: 13px;
-}
-
-/* ── AI generating state ── */
-.generating-card {
-  background: var(--ink);
-  border-radius: 14px;
-  padding: 24px 20px;
-  text-align: center;
-  margin-bottom: 16px;
-  display: none;
-}
-
-.generating-card.visible { display: block; }
-
-.gen-title {
-  font-family: var(--ff);
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--paper);
-  margin-bottom: 6px;
-  letter-spacing: -0.2px;
-}
-
-.gen-sub {
-  font-size: 12px;
-  color: var(--muted2);
-  margin-bottom: 20px;
-}
-
-.progress-track {
-  height: 3px;
-  background: rgba(255,255,255,0.1);
-  border-radius: 99px;
-  overflow: hidden;
-  margin-bottom: 14px;
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--gold), var(--gold2), var(--green2));
-  border-radius: 99px;
-  transition: width 0.4s ease;
-  width: 0%;
-}
-
-.gen-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  text-align: left;
-}
-
-.gen-step {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--fm);
-  font-size: 10px;
-  color: rgba(245,240,232,0.3);
-  letter-spacing: 0.3px;
-  transition: color 0.3s;
-}
-
-.gen-step.active { color: var(--gold2); }
-.gen-step.done   { color: var(--green2); }
-
-.step-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  border: 1.5px solid currentColor;
-  flex-shrink: 0;
-  transition: background 0.3s;
-}
-
-.gen-step.active .step-dot { background: var(--gold2); animation: blink 1s ease-in-out infinite; }
-.gen-step.done .step-dot   { background: var(--green2); border-color: var(--green2); }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-/* ══════════════════════════════
-   SOP DOCUMENT VIEWER
-══════════════════════════════ */
-.sop-doc {
-  background: #fff;
-  border-radius: 14px;
-  border: 1px solid var(--rule);
-  box-shadow: var(--shadow2);
-  overflow: hidden;
-  margin-bottom: 16px;
-  display: none;
-}
-
-.sop-doc.visible { display: block; animation: docReveal 0.4s ease; }
-@keyframes docReveal { from { opacity:0; transform:scale(0.98); } to { opacity:1; transform:scale(1); } }
-
-.sop-doc-header {
-  background: var(--ink);
-  padding: 20px;
-  position: relative;
-  overflow: hidden;
-}
-
-.sop-doc-header::after {
-  content: 'SOP';
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-family: var(--ff);
-  font-size: 64px;
-  font-weight: 900;
-  color: rgba(255,255,255,0.04);
-  letter-spacing: -2px;
-  pointer-events: none;
-}
-
-.sop-meta {
-  font-family: var(--fm);
-  font-size: 9px;
-  color: var(--gold2);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-}
-
-.sop-title-display {
-  font-family: var(--ff);
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--paper);
-  line-height: 1.2;
-  letter-spacing: -0.3px;
-  margin-bottom: 12px;
-}
-
-.sop-info-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.sop-info-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-family: var(--fm);
-  font-size: 9px;
-  color: var(--muted2);
-  letter-spacing: 0.3px;
-}
-
-.sop-info-item strong { color: var(--paper); }
-
-.sop-doc-body { padding: 0; }
-
-.sop-section {
-  border-bottom: 1px solid var(--rule);
-  overflow: hidden;
-}
-
-.sop-section:last-child { border-bottom: none; }
-
-.sop-section-hd {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 13px 18px;
-  background: var(--paper2);
-  cursor: pointer;
-  transition: background 0.15s;
-  user-select: none;
-}
-
-.sop-section-hd:hover { background: var(--paper3); }
-
-.sop-section-hd-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.sop-sec-num {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  background: var(--ink);
-  color: var(--paper);
-  font-family: var(--fm);
-  font-size: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.sop-sec-name {
-  font-family: var(--ff);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ink);
-}
-
-.sop-sec-toggle {
-  font-size: 10px;
-  color: var(--muted2);
-  transition: transform 0.2s;
-}
-
-.sop-section.open .sop-sec-toggle { transform: rotate(180deg); }
-
-.sop-section-body {
-  display: none;
-  padding: 16px 18px;
-}
-
-.sop-section.open .sop-section-body { display: block; animation: expand 0.2s ease; }
-@keyframes expand { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
-
-.sop-section-body p {
-  font-size: 13.5px;
-  color: var(--ink);
-  line-height: 1.75;
-  margin-bottom: 10px;
-}
-
-.sop-step-list {
-  list-style: none;
-  padding: 0;
-}
-
-.sop-step-item {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 12px;
-  padding: 10px 12px;
-  background: var(--paper);
-  border-radius: 9px;
-  border: 1px solid var(--rule);
-  cursor: pointer;
-  transition: all 0.18s;
-  position: relative;
+.shield-core::before{
+  content:"";
+  position:absolute;
+  inset:-18px;
+  border-radius:50%;
+  border:1px solid rgba(58,160,255,0.2);
+  animation:spin 8s linear infinite;
 }
 
-.sop-step-item:hover {
-  border-color: var(--gold);
-  box-shadow: 0 2px 10px rgba(200,148,58,0.1);
+.shield-core img{
+  width:70px;
+  height:70px;
 }
 
-.sop-step-item.checked {
-  background: rgba(45,106,79,0.05);
-  border-color: rgba(82,183,136,0.3);
+@keyframes pulse{
+  0%,100%{ transform:scale(1); box-shadow:0 0 25px rgba(58,160,255,0.25); }
+  50%{ transform:scale(1.05); box-shadow:0 0 60px rgba(58,160,255,0.45); }
 }
 
-.sop-step-item.checked .step-n { background: var(--green2); color: #fff; }
-
-.step-n {
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  background: var(--ink);
-  color: var(--paper);
-  font-family: var(--fm);
-  font-size: 9px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-top: 1px;
-  transition: all 0.2s;
-}
-
-.step-txt {
-  flex: 1;
-  font-size: 13px;
-  color: var(--ink);
-  line-height: 1.6;
-}
-
-.step-txt strong { font-weight: 600; color: var(--ink); }
-
-.step-role-badge {
-  font-family: var(--fm);
-  font-size: 9px;
-  padding: 2px 8px;
-  border-radius: 99px;
-  background: rgba(200,148,58,0.1);
-  border: 1px solid rgba(200,148,58,0.2);
-  color: var(--gold);
-  flex-shrink: 0;
-  align-self: flex-start;
+@keyframes spin{
+  to{ transform:rotate(360deg); }
 }
 
-/* ── Doc action buttons ── */
-.doc-actions {
-  display: flex;
-  gap: 8px;
-  padding: 14px 16px;
-  background: var(--paper2);
-  border-top: 1px solid var(--rule);
-  flex-wrap: wrap;
+.hero h1{
+  margin-top:18px;
+  font-size:22px;
+  letter-spacing:1px;
 }
 
-/* ── Completion bar ── */
-.completion-bar {
-  display: none;
-  margin-bottom: 14px;
+.hero p{
+  color:var(--muted);
+  font-size:13px;
 }
-.completion-bar.visible { display: block; }
 
-.comp-label {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--fm);
-  font-size: 10px;
-  color: var(--muted);
-  margin-bottom: 6px;
-  letter-spacing: 0.5px;
+/* ===== GRID ===== */
+.container{
+  max-width:1000px;
+  margin:auto;
+  padding:20px;
+  position:relative;
+  z-index:2;
 }
 
-.comp-track {
-  height: 4px;
-  background: var(--paper3);
-  border-radius: 99px;
-  overflow: hidden;
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:14px;
 }
 
-.comp-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--green), var(--green2));
-  border-radius: 99px;
-  transition: width 0.4s ease;
+/* ===== GLASS CARD ===== */
+.card{
+  background:var(--panel);
+  border:1px solid var(--stroke);
+  border-radius:16px;
+  padding:16px;
+  backdrop-filter: blur(14px);
+  transition:0.3s;
 }
 
-/* ══════════════════════════════
-   BOTTOM ACTION BAR
-══════════════════════════════ */
-.action-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  padding: 12px 16px;
-  padding-bottom: max(12px, env(safe-area-inset-bottom));
-  background: rgba(245,240,232,0.95);
-  border-top: 1px solid var(--paper3);
-  backdrop-filter: blur(16px);
-  box-shadow: 0 -4px 24px rgba(15,14,12,0.1);
+.card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 10px 30px rgba(58,160,255,0.15);
 }
 
-/* ══════════════════════════════
-   TOAST
-══════════════════════════════ */
-.toast {
-  position: fixed;
-  bottom: 90px;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: var(--ink);
-  color: var(--paper);
-  padding: 10px 18px;
-  border-radius: 99px;
-  font-family: var(--fm);
-  font-size: 11px;
-  letter-spacing: 0.3px;
-  opacity: 0;
-  transition: all 0.3s;
-  pointer-events: none;
-  z-index: 500;
-  white-space: nowrap;
+.card h3{
+  margin-top:0;
+  color:var(--blue2);
 }
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* ── Refinement chat ── */
-.refine-wrap {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 14px;
+button{
+  width:100%;
+  padding:10px;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+  background:linear-gradient(90deg,var(--blue),var(--blue2));
+  color:#fff;
+  font-weight:600;
+  margin-top:10px;
 }
 
-.refine-wrap textarea {
-  flex: 1;
-  min-height: 44px;
-  max-height: 80px;
-  padding: 10px 12px;
-  font-size: 13px;
+button.ghost{
+  background:transparent;
+  border:1px solid var(--stroke);
+  color:var(--blue2);
 }
 
-.refine-btn {
-  width: 44px;
-  height: 44px;
-  background: var(--ink);
-  border: none;
-  border-radius: 9px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: all 0.2s;
-  align-self: flex-end;
+input,textarea{
+  width:100%;
+  margin-top:8px;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid var(--stroke);
+  background:rgba(0,0,0,0.2);
+  color:var(--text);
 }
-.refine-btn:hover { background: var(--gold); transform: scale(1.05); }
-.refine-btn svg { width: 16px; height: 16px; fill: var(--paper); }
 
-/* ── Empty state ── */
-.empty-state {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--muted2);
+/* ===== TIER SWITCH ===== */
+.switch{
+  display:flex;
+  gap:10px;
 }
-.empty-state h3 {
-  font-family: var(--ff);
-  font-size: 18px;
-  margin-bottom: 8px;
-  color: var(--muted);
-}
-.empty-state p { font-size: 13px; line-height: 1.6; }
 
-/* ── Divider ── */
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 16px 0;
-}
-.divider::before,.divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--rule);
-}
-.divider-txt {
-  font-family: var(--fm);
-  font-size: 9px;
-  color: var(--muted2);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
+.hidden{ display:none; }
 
-/* ── Loading spinner ── */
-.spinner {
-  width: 16px; height: 16px;
-  border: 2px solid rgba(245,240,232,0.2);
-  border-top-color: var(--paper);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  flex-shrink: 0;
+footer{
+  text-align:center;
+  padding:30px;
+  color:var(--muted);
+  font-size:12px;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.hidden { display: none !important; }
 </style>
 </head>
+
 <body>
 
-<!-- HEADER -->
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+
 <header>
-  <div class="brand">
-    <div class="brand-name">SOP<span>ilot</span></div>
-    <div class="brand-tag">by Toastid Tech</div>
+  <div class="logo">
+    <img src="logo.png" />
+    <div class="brand">SOPILOT CORE</div>
   </div>
-  <div class="header-actions">
-    <div class="badge badge-green">
-      <div class="live-dot"></div>
-      AI Ready
-    </div>
-    <div class="badge badge-gold">Beta</div>
-  </div>
+
+  <div class="tier" id="tierBadge">FREE NODE</div>
 </header>
 
-<!-- STAGE TABS -->
-<div class="stage-bar">
-  <div class="stage-tab active" id="tab-0" onclick="goTab(0)">
-    <div class="stage-num">1</div> Process Info
+<div class="hero">
+  <div class="shield-core">
+    <img src="logo.png" />
   </div>
-  <div class="stage-tab" id="tab-1" onclick="goTab(1)">
-    <div class="stage-num">2</div> Roles & Scope
-  </div>
-  <div class="stage-tab" id="tab-2" onclick="goTab(2)">
-    <div class="stage-num">3</div> Details
-  </div>
-  <div class="stage-tab" id="tab-3" onclick="goTab(3)">
-    <div class="stage-num">4</div> Your SOP
-  </div>
+  <h1>Neural Control Dashboard</h1>
+  <p>AI system segmented into Free • BYOK • Pro layers</p>
 </div>
 
-<!-- MAIN APP -->
-<div class="app">
-<div class="scroll-area" id="scrollArea">
+<div class="container">
 
-  <!-- ═══ SECTION 0: Process Info ═══ -->
-  <div class="section active" id="sec-0">
-    <div class="hero-card">
-      <div class="hero-eyebrow">SOPilot · AI SOP Builder</div>
-      <div class="hero-title">Turn any process into a<br><em>professional SOP</em> in minutes</div>
-      <div class="hero-sub">Describe what your team does. SOPilot generates a complete, role-assigned standard operating procedure — ready to share.</div>
-      <div class="feature-chips">
-        <div class="fchip">✦ AI-Generated</div>
-        <div class="fchip">✦ Role-Assigned Steps</div>
-        <div class="fchip">✦ Interactive Checklist</div>
-        <div class="fchip">✦ Refinement Chat</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <div>
-          <div class="card-label">Step 1 of 3</div>
-          <div class="card-title">What process are we documenting?</div>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="field">
-          <div class="field-label">Process Name <span class="field-req">*</span></div>
-          <input type="text" id="procName" placeholder="e.g. New Employee Onboarding" maxlength="80">
-        </div>
-        <div class="field">
-          <div class="field-label">Describe it in your own words <span class="field-req">*</span></div>
-          <textarea id="procDesc" placeholder="e.g. When we hire someone new, we need to set up their email, walk them through our tools, introduce them to the team, and make sure they're ready to work by day 3..." rows="4"></textarea>
-        </div>
-        <div class="field">
-          <div class="field-label">Industry / Business Type</div>
-          <select id="industry">
-            <option value="">Select your industry...</option>
-            <option>Retail / E-Commerce</option>
-            <option>Restaurant / Food Service</option>
-            <option>Healthcare / Medical Office</option>
-            <option>Construction / Trades</option>
-            <option>Professional Services</option>
-            <option>Marketing / Agency</option>
-            <option>Real Estate</option>
-            <option>Logistics / Shipping</option>
-            <option>Technology / SaaS</option>
-            <option>Non-Profit</option>
-            <option>Other</option>
-          </select>
-        </div>
-
-        <div class="divider"><span class="divider-txt">Process Type</span></div>
-
-        <div class="field">
-          <div class="field-label">Select all that apply</div>
-          <div class="tag-grid" id="typeGrid">
-            <div class="tag" onclick="toggleTag(this)">📋 Administrative</div>
-            <div class="tag" onclick="toggleTag(this)">👥 HR / People</div>
-            <div class="tag" onclick="toggleTag(this)">💰 Finance</div>
-            <div class="tag" onclick="toggleTag(this)">🛒 Sales</div>
-            <div class="tag" onclick="toggleTag(this)">📣 Marketing</div>
-            <div class="tag" onclick="toggleTag(this)">🔧 Operations</div>
-            <div class="tag" onclick="toggleTag(this)">🚚 Logistics</div>
-            <div class="tag" onclick="toggleTag(this)">⚠️ Compliance</div>
-            <div class="tag" onclick="toggleTag(this)">🎧 Customer Service</div>
-            <div class="tag" onclick="toggleTag(this)">💻 IT / Tech</div>
-          </div>
-        </div>
-      </div>
+  <div class="card">
+    <h3>System Mode</h3>
+    <div class="switch">
+      <button onclick="setTier('free')">Free Node</button>
+      <button class="ghost" onclick="setTier('byok')">BYOK Core</button>
+      <button onclick="setTier('pro')">Pro Grid</button>
     </div>
   </div>
 
-  <!-- ═══ SECTION 1: Roles & Scope ═══ -->
-  <div class="section" id="sec-1">
-    <div class="card">
-      <div class="card-header">
-        <div>
-          <div class="card-label">Step 2 of 3</div>
-          <div class="card-title">Who's involved?</div>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="field">
-          <div class="field-label">Roles / Job Titles <span class="field-req">*</span></div>
-          <div id="roleList" style="margin-bottom:10px"></div>
-          <div class="add-role-row">
-            <input type="text" id="roleInput" placeholder="e.g. Office Manager, HR Rep..." onkeydown="if(event.key==='Enter'){addRole();event.preventDefault()}">
-            <button class="btn btn-ghost btn-sm" onclick="addRole()">+ Add</button>
-          </div>
-        </div>
-
-        <div class="divider"><span class="divider-txt">Quick Add</span></div>
-
-        <div class="tag-grid" style="margin-bottom:16px">
-          <div class="tag" onclick="quickRole(this)">Owner / CEO</div>
-          <div class="tag" onclick="quickRole(this)">Manager</div>
-          <div class="tag" onclick="quickRole(this)">HR</div>
-          <div class="tag" onclick="quickRole(this)">Sales Rep</div>
-          <div class="tag" onclick="quickRole(this)">Admin</div>
-          <div class="tag" onclick="quickRole(this)">IT</div>
-          <div class="tag" onclick="quickRole(this)">Accountant</div>
-          <div class="tag" onclick="quickRole(this)">Receptionist</div>
-        </div>
-
-        <div class="field">
-          <div class="field-label">How often is this process done?</div>
-          <select id="frequency">
-            <option value="as needed">As needed / ad hoc</option>
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-            <option value="quarterly">Quarterly</option>
-            <option value="annually">Annually</option>
-            <option value="per-hire">Per new hire</option>
-            <option value="per-client">Per new client</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <div class="field-label">Estimated time to complete</div>
-          <select id="duration">
-            <option>Under 30 minutes</option>
-            <option>30 – 60 minutes</option>
-            <option>1 – 3 hours</option>
-            <option>Half a day</option>
-            <option>Full day</option>
-            <option>Multiple days</option>
-          </select>
-        </div>
-      </div>
-    </div>
+  <!-- FREE -->
+  <div class="card" id="free">
+    <h3>Local Memory Node</h3>
+    <textarea placeholder="Store thoughts in local memory..."></textarea>
+    <button onclick="save()">Save to Device</button>
   </div>
 
-  <!-- ═══ SECTION 2: Details ═══ -->
-  <div class="section" id="sec-2">
-    <div class="card">
-      <div class="card-header">
-        <div>
-          <div class="card-label">Step 3 of 3</div>
-          <div class="card-title">Final details</div>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="field">
-          <div class="field-label">Tools / Software used in this process</div>
-          <input type="text" id="tools" placeholder="e.g. QuickBooks, Slack, Google Drive, HubSpot">
-        </div>
+  <!-- BYOK -->
+  <div class="card hidden" id="byok">
+    <h3>External AI Link</h3>
+    <input id="key" type="password" placeholder="API Key (encrypted locally)"/>
+    <button onclick="storeKey()">Lock Key</button>
 
-        <div class="field">
-          <div class="field-label">Any rules, compliance, or safety notes</div>
-          <textarea id="compliance" placeholder="e.g. Must follow HIPAA rules when accessing patient data. Manager must approve before sending to client..." rows="3"></textarea>
-        </div>
+    <textarea id="prompt" placeholder="Ask AI..."></textarea>
+    <button onclick="demoAI()">Execute (Sim)</button>
 
-        <div class="field">
-          <div class="field-label">SOP Detail Level</div>
-          <div class="tag-grid">
-            <div class="tag selected" id="detail-basic" onclick="selectDetail('basic')">📝 Basic (5–8 steps)</div>
-            <div class="tag" id="detail-standard" onclick="selectDetail('standard')">📋 Standard (8–15 steps)</div>
-            <div class="tag" id="detail-detailed" onclick="selectDetail('detailed')">📚 Detailed (15+ steps)</div>
-          </div>
-        </div>
-
-        <div class="field">
-          <div class="field-label">Tone</div>
-          <div class="tag-grid">
-            <div class="tag selected" id="tone-professional" onclick="selectTone('professional')">🏢 Professional</div>
-            <div class="tag" id="tone-casual" onclick="selectTone('casual')">👋 Casual / Friendly</div>
-            <div class="tag" id="tone-strict" onclick="selectTone('strict')">⚖️ Formal / Strict</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Generating animation -->
-    <div class="generating-card" id="generatingCard">
-      <div class="gen-title">Building your SOP...</div>
-      <div class="gen-sub">SOPilot AI is writing your document</div>
-      <div class="progress-track">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
-      <div class="gen-steps">
-        <div class="gen-step" id="gs0"><div class="step-dot"></div>Analyzing your process description</div>
-        <div class="gen-step" id="gs1"><div class="step-dot"></div>Assigning steps to roles</div>
-        <div class="gen-step" id="gs2"><div class="step-dot"></div>Writing procedures & checkpoints</div>
-        <div class="gen-step" id="gs3"><div class="step-dot"></div>Adding compliance notes</div>
-        <div class="gen-step" id="gs4"><div class="step-dot"></div>Formatting your document</div>
-      </div>
-    </div>
+    <p id="out" style="color:var(--muted)"></p>
   </div>
 
-  <!-- ═══ SECTION 3: SOP Output ═══ -->
-  <div class="section" id="sec-3">
-
-    <!-- Completion tracker -->
-    <div class="completion-bar" id="completionBar">
-      <div class="comp-label">
-        <span>Step Completion</span>
-        <span id="compPct">0%</span>
-      </div>
-      <div class="comp-track">
-        <div class="comp-fill" id="compFill" style="width:0%"></div>
-      </div>
-    </div>
-
-    <!-- SOP Document -->
-    <div class="sop-doc" id="sopDoc">
-      <div class="sop-doc-header">
-        <div class="sop-meta" id="sopMeta">STANDARD OPERATING PROCEDURE</div>
-        <div class="sop-title-display" id="sopTitleDisplay">—</div>
-        <div class="sop-info-row">
-          <div class="sop-info-item">📅 <strong id="sopDate">—</strong></div>
-          <div class="sop-info-item">👤 <strong id="sopRoles">—</strong></div>
-          <div class="sop-info-item">🔁 <strong id="sopFreq">—</strong></div>
-          <div class="sop-info-item">⏱ <strong id="sopDur">—</strong></div>
-        </div>
-      </div>
-      <div class="sop-doc-body" id="sopBody">
-        <!-- Injected by JS -->
-      <div class="doc-actions">
-  <button class="btn btn-ghost btn-sm" onclick="copyPlaintext()">📋 Copy Text</button>
-  <button class="btn btn-ghost btn-sm" onclick="downloadSOP()">💾 Download</button>
-  <button class="btn btn-ghost btn-sm" onclick="showToast('Print feature coming soon')">🖨️ Print</button>
-  <button class="btn btn-gold btn-sm" onclick="showToast('Export to PDF coming soon')">⬇️ Export PDF</button>
-      </div>
-      
-
-    <!-- Refinement -->
-    <div class="card" id="refineCard" style="display:none">
-      <div class="card-header">
-        <div>
-          <div class="card-label">SOPilot AI · Refinement</div>
-          <div class="card-title">Refine your SOP</div>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="refine-wrap">
-          <textarea id="refineInput" placeholder="e.g. Add a step for getting manager approval before step 3..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){refine();event.preventDefault()}" oninput="autoSize(this)"></textarea>
-          <button class="refine-btn" id="refineBtn" onclick="refine()">
-            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-          </button>
-        </div>
-        <p style="font-size:11px;color:var(--muted2);line-height:1.5">Ask SOPilot to add steps, change the tone, assign different roles, add a compliance section, or anything else.</p>
-      </div>
-    </div>
-
-    <!-- Empty state before generation -->
-    <div class="empty-state" id="emptyState">
-      <h3>Your SOP will appear here</h3>
-      <p>Complete the form on the previous tabs and hit <strong>Generate SOP</strong> to build your document.</p>
-    </div>
-
+  <!-- PRO -->
+  <div class="card hidden" id="pro">
+    <h3>Pro Command Layer</h3>
+    <p style="color:var(--muted)">
+      Cloud AI + automation engine placeholder
+    </p>
+    <button onclick="pro()">Activate Core</button>
+    <p id="proout" style="color:var(--muted)"></p>
   </div>
 
-</div><!-- end scroll-area -->
-</div><!-- end app -->
-
-<!-- ACTION BAR -->
-<div class="action-bar">
-  <button class="btn btn-primary" id="mainBtn" onclick="handleMain()">
-    Continue →
-  </button>
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+<footer>
+  SOPilot • Shield Architecture UI • Toastid Tech LLC
+</footer>
 
 <script>
-// ─── State ───────────────────────────────────────
-const WORKER = 'https://muddy-violet-2a0d.toastidtechllc.workers.dev';
-let currentTab    = 0;
-let roles         = [];
-let selectedTypes = [];
-let detailLevel   = 'basic';
-let tone          = 'professional';
-let sopData       = null;
-let totalSteps    = 0;
-let checkedSteps  = 0;
+let tier="free";
 
-// ─── Tab navigation ───────────────────────────────
-function goTab(n) {
-  if (n > currentTab && !validateTab(currentTab)) return;
-  document.querySelectorAll('.section').forEach((s,i) => {
-    s.classList.toggle('active', i === n);
-  });
-  document.querySelectorAll('.stage-tab').forEach((t,i) => {
-    t.classList.toggle('active', i === n);
-  });
-  currentTab = n;
-  updateBtn();
-  document.getElementById('scrollArea').scrollTop = 0;
-}
+function setTier(t){
+  tier=t;
+  document.getElementById("tierBadge").innerText=t.toUpperCase()+" NODE";
 
-function validateTab(n) {
-  if (n === 0) {
-    if (!val('procName')) { showToast('Enter a process name'); shake('procName'); return false; }
-    if (!val('procDesc')) { showToast('Describe the process'); shake('procDesc'); return false; }
-  }
-  if (n === 1) {
-    if (roles.length === 0) { showToast('Add at least one role'); return false; }
-  }
-  return true;
-}
-
-function updateBtn() {
-  const btn = document.getElementById('mainBtn');
-  if (currentTab < 2) {
-    btn.innerHTML = 'Continue →';
-    btn.onclick = handleMain;
-    btn.disabled = false;
-  } else if (currentTab === 2) {
-    btn.innerHTML = '✦ Generate My SOP';
-    btn.onclick = generate;
-    btn.disabled = false;
-  } else {
-    btn.innerHTML = '+ Build Another SOP';
-    btn.onclick = reset;
-    btn.disabled = false;
-  }
-}
-
-function handleMain() {
-  if (!validateTab(currentTab)) return;
-  goTab(currentTab + 1);
-}
-
-// ─── Tags ─────────────────────────────────────────
-function toggleTag(el) {
-  el.classList.toggle('selected');
-  selectedTypes = Array.from(document.querySelectorAll('#typeGrid .tag.selected'))
-    .map(t => t.textContent.replace(/^.{2}/, '').trim());
-}
-
-function selectDetail(d) {
-  detailLevel = d;
-  ['basic','standard','detailed'].forEach(k => {
-    document.getElementById('detail-'+k).classList.toggle('selected', k === d);
-  });
-}
-
-function selectTone(t) {
-  tone = t;
-  ['professional','casual','strict'].forEach(k => {
-    document.getElementById('tone-'+k).classList.toggle('selected', k === t);
-  });
-}
-
-// ─── Roles ───────────────────────────────────────
-function addRole() {
-  const inp = document.getElementById('roleInput');
-  const v   = inp.value.trim();
-  if (!v || roles.includes(v)) { inp.value=''; return; }
-  roles.push(v);
-  inp.value = '';
-  renderRoles();
-}
-
-function quickRole(el) {
-  const v = el.textContent.trim();
-  if (!roles.includes(v)) { roles.push(v); renderRoles(); }
-}
-
-function removeRole(i) {
-  roles.splice(i, 1);
-  renderRoles();
-}
-
-const roleEmojis = ['🧑‍💼','👩‍💻','🧑‍🔧','👩‍⚕️','🧑‍🏫','👨‍💼','👩‍🔬','🧑‍🎨'];
-
-function renderRoles() {
-  const list = document.getElementById('roleList');
-  list.innerHTML = roles.map((r,i) => `
-    <div class="role-row">
-      <div class="role-icon">${roleEmojis[i % roleEmojis.length]}</div>
-      <div class="role-name">${r}</div>
-      <button class="role-del" onclick="removeRole(${i})">×</button>
-    </div>`).join('');
-}
-
-// ─── Generate ─────────────────────────────────────
-async function generate() {
-  if (!validateTab(2)) return;
-
-  const btn = document.getElementById('mainBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div> Generating...';
-
-  // Show generating card
-  const gc = document.getElementById('generatingCard');
-  gc.classList.add('visible');
-  gc.scrollIntoView({ behavior:'smooth', block:'center' });
-
-  // Animate steps
-  const steps = ['gs0','gs1','gs2','gs3','gs4'];
-  const pct   = [15, 35, 60, 80, 95];
-  let si = 0;
-  const stepTimer = setInterval(() => {
-    if (si > 0) document.getElementById(steps[si-1]).className = 'gen-step done';
-    if (si < steps.length) {
-      document.getElementById(steps[si]).className = 'gen-step active';
-      document.getElementById('progressFill').style.width = pct[si] + '%';
-      si++;
-    }
-  }, 900);
-
-  const prompt = buildPrompt();
-
-  try {
-    const res = await fetch(WORKER, {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 2048,
-        system: `You are SOPilot, an expert business process documentation specialist. Generate complete, professional Standard Operating Procedures. Always respond with ONLY valid JSON matching exactly this structure, no markdown, no preamble:
-{
-  "title": "string",
-  "purpose": "string (2-3 sentences)",
-  "scope": "string (who this applies to)",
-  "sections": [
-    {
-      "name": "string",
-      "intro": "string (1-2 sentences, optional)",
-      "steps": [
-        {
-          "text": "string (clear action step)",
-          "role": "string (one of the provided roles)",
-          "note": "string (optional tip or warning, null if none)"
-        }
-      ]
-    }
-  ],
-  "compliance_notes": "string or null",
-  "revision_date": "string (today's date)",
-  "version": "1.0"
-}
-Sections should include: Overview/Purpose, Preparation/Requirements, Step-by-Step Procedure (main section with all steps), Quality Checks, and Troubleshooting/Common Issues.`,
-        messages: [{ role:'user', content: prompt }]
-      })
-    });
-
-    const data  = await res.json();
-    const text  = data?.content?.[0]?.text || '';
-    const clean = text.replace(/```json|```/g,'').trim();
-    sopData     = JSON.parse(clean);
-
-    clearInterval(stepTimer);
-    steps.forEach(s => document.getElementById(s).className = 'gen-step done');
-    document.getElementById('progressFill').style.width = '100%';
-
-    setTimeout(() => {
-      gc.classList.remove('visible');
-      renderSOP(sopData);
-      goTab(3);
-      btn.disabled = false;
-      updateBtn();
-    }, 600);
-
-  } catch(e) {
-    clearInterval(stepTimer);
-    gc.classList.remove('visible');
-    showToast('Generation failed — check your connection');
-    btn.disabled = false;
-    updateBtn();
-  }
-}
-
-function buildPrompt() {
-  return `Generate an SOP for the following:
-
-PROCESS NAME: ${val('procName')}
-DESCRIPTION: ${val('procDesc')}
-INDUSTRY: ${val('industry') || 'General Business'}
-PROCESS TYPES: ${selectedTypes.join(', ') || 'General'}
-ROLES INVOLVED: ${roles.join(', ')}
-FREQUENCY: ${val('frequency')}
-ESTIMATED DURATION: ${val('duration')}
-TOOLS USED: ${val('tools') || 'None specified'}
-COMPLIANCE/RULES: ${val('compliance') || 'None specified'}
-DETAIL LEVEL: ${detailLevel} (${detailLevel==='basic'?'5-8':detailLevel==='standard'?'8-15':'15+'} steps total)
-TONE: ${tone}
-
-Generate a complete, immediately usable SOP. Make steps specific and actionable, not generic. Assign each step to one of the provided roles. Include practical tips and warnings where relevant.`;
-}
-
-// ─── Render SOP ──────────────────────────────────
-function renderSOP(sop) {
-  // Header meta
-  document.getElementById('sopTitleDisplay').textContent = sop.title;
-  document.getElementById('sopDate').textContent = new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-  document.getElementById('sopRoles').textContent = roles.join(' · ') || '—';
-  document.getElementById('sopFreq').textContent = val('frequency') || '—';
-  document.getElementById('sopDur').textContent  = val('duration') || '—';
-
-  // Purpose + Scope intro
-  let html = '';
-  html += `<div class="sop-section open">
-    <div class="sop-section-hd" onclick="toggleSec(this)">
-      <div class="sop-section-hd-left">
-        <div class="sop-sec-num">📌</div>
-        <div class="sop-sec-name">Purpose &amp; Scope</div>
-      </div>
-      <div class="sop-sec-toggle">▼</div>
-    </div>
-    <div class="sop-section-body">
-      <p><strong>Purpose:</strong> ${sop.purpose}</p>
-      <p><strong>Scope:</strong> ${sop.scope}</p>
-      ${sop.compliance_notes ? `<p><strong>⚠️ Compliance Note:</strong> ${sop.compliance_notes}</p>` : ''}
-    </div>
-  </div>`;
-
-  // Step counter for completion tracking
-  totalSteps   = 0;
-  checkedSteps = 0;
-
-  sop.sections.forEach((sec, si) => {
-    html += `<div class="sop-section open">
-      <div class="sop-section-hd" onclick="toggleSec(this)">
-        <div class="sop-section-hd-left">
-          <div class="sop-sec-num">${si+1}</div>
-          <div class="sop-sec-name">${sec.name}</div>
-        </div>
-        <div class="sop-sec-toggle">▼</div>
-      </div>
-      <div class="sop-section-body">
-        ${sec.intro ? `<p>${sec.intro}</p>` : ''}
-        <ul class="sop-step-list">`;
-
-    sec.steps.forEach((step, idx) => {
-      totalSteps++;
-      const stepId = `step-${si}-${idx}`;
-      html += `<li class="sop-step-item" id="${stepId}" onclick="toggleStep('${stepId}')">
-        <div class="step-n">${idx+1}</div>
-        <div class="step-txt">
-          ${step.text}
-          ${step.note ? `<br><span style="font-size:11.5px;color:var(--muted);font-style:italic">💡 ${step.note}</span>` : ''}
-        </div>
-        <div class="step-role-badge">${step.role}</div>
-      </li>`;
-    });
-
-    html += `</ul></div></div>`;
+  ["free","byok","pro"].forEach(id=>{
+    document.getElementById(id).classList.add("hidden");
   });
 
-  document.getElementById('sopBody').innerHTML = html;
-  document.getElementById('sopDoc').classList.add('visible');
-  document.getElementById('emptyState').style.display = 'none';
-  document.getElementById('refineCard').style.display = 'block';
-  document.getElementById('completionBar').classList.add('visible');
-
-  // Mark tab 1-2 done
-  [0,1,2].forEach(i => {
-    const t = document.getElementById('tab-'+i);
-    t.classList.remove('active');
-    t.classList.add('done');
-    t.querySelector('.stage-num').textContent = '✓';
-  });
+  document.getElementById(t).classList.remove("hidden");
+  localStorage.setItem("tier",t);
 }
 
-function toggleSec(hd) {
-  hd.closest('.sop-section').classList.toggle('open');
+function save(){
+  localStorage.setItem("mem",document.querySelector("textarea").value);
 }
 
-function toggleStep(id) {
-  const el = document.getElementById(id);
-  const wasChecked = el.classList.contains('checked');
-  el.classList.toggle('checked');
-  checkedSteps += wasChecked ? -1 : 1;
-  const pct = Math.round((checkedSteps / totalSteps) * 100);
-  document.getElementById('compFill').style.width  = pct + '%';
-  document.getElementById('compPct').textContent   = pct + '%';
+function storeKey(){
+  localStorage.setItem("key",btoa(document.getElementById("key").value));
+  alert("Key sealed in local vault");
 }
 
-// ─── Refinement ──────────────────────────────────
-async function refine() {
-  const inp = document.getElementById('refineInput');
-  const req = inp.value.trim();
-  if (!req || !sopData) return;
-
-  const btn = document.getElementById('refineBtn');
-  btn.innerHTML = '<div class="spinner" style="border-top-color:var(--paper)"></div>';
-  btn.disabled  = true;
-  inp.value     = '';
-
-  showToast('Refining your SOP...');
-
-  try {
-    const res = await fetch(WORKER, {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 2048,
-        system: `You are SOPilot. The user wants to refine their existing SOP. Apply the requested changes and return the COMPLETE updated SOP as valid JSON only, same structure as before. No markdown, no preamble.`,
-        messages: [{
-          role: 'user',
-          content: `Current SOP:\n${JSON.stringify(sopData)}\n\nRefinement request: ${req}\n\nReturn the complete updated SOP JSON.`
-        }]
-      })
-    });
-
-    const data  = await res.json();
-    const text  = data?.content?.[0]?.text || '';
-    const clean = text.replace(/```json|```/g,'').trim();
-    sopData     = JSON.parse(clean);
-
-    checkedSteps = 0;
-    renderSOP(sopData);
-    showToast('✓ SOP updated');
-
-  } catch(e) {
-    showToast('Refinement failed — try again');
-  }
-
-  btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>';
-  btn.disabled  = false;
+function demoAI(){
+  const p=document.getElementById("prompt").value;
+  document.getElementById("out").innerText="NEURAL RESPONSE: "+p;
 }
 
-// ─── Copy plaintext ──────────────────────────────
-function copyPlaintext() {
-  if (!sopData) return;
-  let txt = `${sopData.title}\n${'='.repeat(sopData.title.length)}\n\n`;
-  txt += `PURPOSE: ${sopData.purpose}\nSCOPE: ${sopData.scope}\n\n`;
-  sopData.sections.forEach((sec, i) => {
-    txt += `${i+1}. ${sec.name}\n${'-'.repeat(sec.name.length+3)}\n`;
-    if (sec.intro) txt += `${sec.intro}\n\n`;
-    sec.steps.forEach((s,j) => {
-      txt += `  ${j+1}. [${s.role}] ${s.text}\n`;
-      if (s.note) txt += `     💡 ${s.note}\n`;
-    });
-    txt += '\n';
-  });
-  navigator.clipboard.writeText(txt).then(() => showToast('✓ Copied to clipboard'));
+function pro(){
+  document.getElementById("proout").innerText="Core online (backend not attached yet)";
 }
 
-// ─── Download SOP ────────────────────────────────
-function downloadSOP() {
-  if (!sopData) return;
-  
-  // Build text content
-  let txt = `${sopData.title}\n${'='.repeat(sopData.title.length)}\n\n`;
-  txt += `PURPOSE: ${sopData.purpose}\nSCOPE: ${sopData.scope}\n\n`;
-  sopData.sections.forEach((sec, i) => {
-    txt += `${i+1}. ${sec.name}\n${'-'.repeat(sec.name.length+3)}\n`;
-    if (sec.intro) txt += `${sec.intro}\n\n`;
-    sec.steps.forEach((s,j) => {
-      txt += `  ${j+1}. [${s.role}] ${s.text}\n`;
-      if (s.note) txt += `     💡 ${s.note}\n`;
-    });
-    txt += '\n';
-  });
-  
-  // Create and trigger download
-  const blob = new Blob([txt], { type: 'text/plain' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${sopData.title.replace(/[^a-z0-9]/gi, '_')}_SOP.txt`;
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(() => {
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }, 100);
-  
-  showToast('✓ SOP downloaded');
-}
+window.onload=()=>{
+  setTier(localStorage.getItem("tier")||"free");
+};
+</script>
+
+</body>
+</html>
