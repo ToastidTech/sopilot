@@ -3,13 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>SOPilot | Neural Control Core</title>
+<title>SOPilot | Toastid Tech</title>
 
 <style>
 :root{
   --bg:#070A12;
   --panel:rgba(18,24,40,0.55);
-  --glass:rgba(255,255,255,0.05);
   --stroke:rgba(80,170,255,0.25);
   --blue:#3aa0ff;
   --blue2:#66d1ff;
@@ -26,29 +25,21 @@ body{
   margin:0;
   background: radial-gradient(circle at top, #0d1a33, var(--bg));
   color:var(--text);
-  overflow-x:hidden;
 }
 
-/* ===== SHIELD BACKGROUND GLOW ===== */
+/* BACKGROUND ORBS */
 .bg-orb{
   position:fixed;
   width:600px;
   height:600px;
   background: radial-gradient(circle, rgba(58,160,255,0.25), transparent 60%);
   filter: blur(40px);
-  animation: float 10s ease-in-out infinite;
   z-index:0;
 }
-
 .orb1{ top:-200px; left:-200px; }
-.orb2{ bottom:-200px; right:-200px; animation-delay:2s; }
+.orb2{ bottom:-200px; right:-200px; }
 
-@keyframes float{
-  0%,100%{ transform:translateY(0px) }
-  50%{ transform:translateY(30px) }
-}
-
-/* ===== HEADER ===== */
+/* HEADER */
 header{
   position:sticky;
   top:0;
@@ -56,88 +47,45 @@ header{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:14px 18px;
+  padding:12px 16px;
   backdrop-filter: blur(18px);
   background: rgba(10,14,25,0.6);
   border-bottom:1px solid var(--stroke);
 }
 
-.logo{
+.toastid{
   display:flex;
   align-items:center;
-  gap:12px;
-}
-
-.logo img{
-  width:42px;
-  height:42px;
-  border-radius:10px;
-  box-shadow:0 0 18px rgba(58,160,255,0.5);
-}
-
-.brand{
-  font-weight:700;
-  letter-spacing:2px;
-}
-
-.tier{
-  padding:6px 12px;
-  border-radius:999px;
-  border:1px solid var(--stroke);
-  color:var(--blue2);
-  background:rgba(58,160,255,0.08);
+  gap:10px;
   font-size:12px;
+  opacity:0.7;
 }
 
-/* ===== HERO SHIELD CORE ===== */
+.sopilot{
+  font-weight:700;
+  letter-spacing:6px;
+  color:var(--blue2);
+  text-shadow:0 0 18px rgba(58,160,255,0.35);
+}
+
+.status{
+  font-size:12px;
+  color:var(--muted);
+  border:1px solid var(--stroke);
+  padding:6px 10px;
+  border-radius:999px;
+}
+
+/* HERO */
 .hero{
   text-align:center;
-  padding:40px 20px 10px;
+  padding:40px 20px 20px;
   position:relative;
-  z-index:2;
-}
-
-.shield-core{
-  width:140px;
-  height:140px;
-  margin:0 auto;
-  border-radius:50%;
-  border:2px solid var(--stroke);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  position:relative;
-  box-shadow:0 0 40px rgba(58,160,255,0.25);
-  animation:pulse 3s infinite ease-in-out;
-}
-
-.shield-core::before{
-  content:"";
-  position:absolute;
-  inset:-18px;
-  border-radius:50%;
-  border:1px solid rgba(58,160,255,0.2);
-  animation:spin 8s linear infinite;
-}
-
-.shield-core img{
-  width:70px;
-  height:70px;
-}
-
-@keyframes pulse{
-  0%,100%{ transform:scale(1); box-shadow:0 0 25px rgba(58,160,255,0.25); }
-  50%{ transform:scale(1.05); box-shadow:0 0 60px rgba(58,160,255,0.45); }
-}
-
-@keyframes spin{
-  to{ transform:rotate(360deg); }
 }
 
 .hero h1{
-  margin-top:18px;
-  font-size:22px;
-  letter-spacing:1px;
+  margin:10px 0 5px;
+  font-size:20px;
 }
 
 .hero p{
@@ -145,82 +93,64 @@ header{
   font-size:13px;
 }
 
-/* ===== GRID ===== */
+/* CORE */
 .container{
-  max-width:1000px;
+  max-width:900px;
   margin:auto;
   padding:20px;
   position:relative;
   z-index:2;
 }
 
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:14px;
-}
-
-/* ===== GLASS CARD ===== */
+/* CARD */
 .card{
   background:var(--panel);
   border:1px solid var(--stroke);
-  border-radius:16px;
+  border-radius:14px;
   padding:16px;
-  backdrop-filter: blur(14px);
-  transition:0.3s;
-}
-
-.card:hover{
-  transform:translateY(-4px);
-  box-shadow:0 10px 30px rgba(58,160,255,0.15);
+  margin-bottom:14px;
+  backdrop-filter: blur(12px);
 }
 
 .card h3{
-  margin-top:0;
+  margin:0 0 10px;
   color:var(--blue2);
+}
+
+/* INPUTS */
+select, textarea, input{
+  width:100%;
+  padding:10px;
+  margin-top:8px;
+  border-radius:10px;
+  border:1px solid var(--stroke);
+  background:rgba(0,0,0,0.25);
+  color:var(--text);
 }
 
 button{
   width:100%;
   padding:10px;
-  border-radius:12px;
+  margin-top:10px;
+  border-radius:10px;
   border:none;
   cursor:pointer;
   background:linear-gradient(90deg,var(--blue),var(--blue2));
-  color:#fff;
+  color:white;
   font-weight:600;
-  margin-top:10px;
 }
 
-button.ghost{
+button.secondary{
   background:transparent;
   border:1px solid var(--stroke);
   color:var(--blue2);
 }
 
-input,textarea{
-  width:100%;
-  margin-top:8px;
-  padding:10px;
-  border-radius:10px;
-  border:1px solid var(--stroke);
-  background:rgba(0,0,0,0.2);
-  color:var(--text);
-}
-
-/* ===== TIER SWITCH ===== */
-.switch{
-  display:flex;
-  gap:10px;
-}
-
-.hidden{ display:none; }
-
-footer{
-  text-align:center;
-  padding:30px;
+.output{
+  margin-top:10px;
+  font-size:13px;
   color:var(--muted);
-  font-size:12px;
+  white-space:pre-wrap;
 }
 </style>
 </head>
@@ -231,104 +161,87 @@ footer{
 <div class="bg-orb orb2"></div>
 
 <header>
-  <div class="logo">
-    <img src="logo.png" />
-    <div class="brand">SOPILOT CORE</div>
-  </div>
-
-  <div class="tier" id="tierBadge">FREE NODE</div>
+  <div class="toastid">TOASTID TECH</div>
+  <div class="sopilot">SOPILOT</div>
+  <div class="status" id="status">FREE MODE</div>
 </header>
 
 <div class="hero">
-  <div class="shield-core">
-    <img src="logo.png" />
-  </div>
-  <h1>Neural Control Dashboard</h1>
-  <p>AI system segmented into Free • BYOK • Pro layers</p>
+  <h1>Structured SOP Execution Engine</h1>
+  <p>Select a SOP → Provide context → Generate output</p>
 </div>
 
 <div class="container">
 
+  <!-- SOP SELECTOR -->
   <div class="card">
-    <h3>System Mode</h3>
-    <div class="switch">
-      <button onclick="setTier('free')">Free Node</button>
-      <button class="ghost" onclick="setTier('byok')">BYOK Core</button>
-      <button onclick="setTier('pro')">Pro Grid</button>
-    </div>
+    <h3>SOP Selector</h3>
+    <select id="sop">
+      <option value="content">Content Creation SOP</option>
+      <option value="marketing">Marketing SOP</option>
+      <option value="client">Client Reply SOP</option>
+      <option value="strategy">Strategy SOP</option>
+      <option value="custom">Custom SOP</option>
+    </select>
   </div>
 
-  <!-- FREE -->
-  <div class="card" id="free">
-    <h3>Local Memory Node</h3>
-    <textarea placeholder="Store thoughts in local memory..."></textarea>
-    <button onclick="save()">Save to Device</button>
-  </div>
+  <!-- INPUT -->
+  <div class="card">
+    <h3>Input Context</h3>
+    <textarea id="context" placeholder="Describe what you need..."></textarea>
 
-  <!-- BYOK -->
-  <div class="card hidden" id="byok">
-    <h3>External AI Link</h3>
-    <input id="key" type="password" placeholder="API Key (encrypted locally)"/>
-    <button onclick="storeKey()">Lock Key</button>
+    <button onclick="runSOP()">Generate SOP Output</button>
+    <button class="secondary" onclick="saveKey()">Save BYOK Key (optional)</button>
 
-    <textarea id="prompt" placeholder="Ask AI..."></textarea>
-    <button onclick="demoAI()">Execute (Sim)</button>
-
-    <p id="out" style="color:var(--muted)"></p>
-  </div>
-
-  <!-- PRO -->
-  <div class="card hidden" id="pro">
-    <h3>Pro Command Layer</h3>
-    <p style="color:var(--muted)">
-      Cloud AI + automation engine placeholder
-    </p>
-    <button onclick="pro()">Activate Core</button>
-    <p id="proout" style="color:var(--muted)"></p>
+    <input id="key" type="password" placeholder="BYOK API Key (optional)"/>
+    <div class="output" id="out"></div>
   </div>
 
 </div>
 
-<footer>
-  SOPilot • Shield Architecture UI • Toastid Tech LLC
-</footer>
-
 <script>
-let tier="free";
+let apiKey = localStorage.getItem("apiKey") || null;
 
-function setTier(t){
-  tier=t;
-  document.getElementById("tierBadge").innerText=t.toUpperCase()+" NODE";
-
-  ["free","byok","pro"].forEach(id=>{
-    document.getElementById(id).classList.add("hidden");
-  });
-
-  document.getElementById(t).classList.remove("hidden");
-  localStorage.setItem("tier",t);
+function saveKey(){
+  const key = document.getElementById("key").value.trim();
+  if(!key){
+    alert("No key entered");
+    return;
+  }
+  apiKey = key;
+  localStorage.setItem("apiKey", key);
+  alert("BYOK key saved");
 }
 
-function save(){
-  localStorage.setItem("mem",document.querySelector("textarea").value);
-}
+function runSOP(){
+  const sop = document.getElementById("sop").value;
+  const context = document.getElementById("context").value;
 
-function storeKey(){
-  localStorage.setItem("key",btoa(document.getElementById("key").value));
-  alert("Key sealed in local vault");
-}
+  if(!context){
+    document.getElementById("out").innerText = "Please enter context.";
+    return;
+  }
 
-function demoAI(){
-  const p=document.getElementById("prompt").value;
-  document.getElementById("out").innerText="NEURAL RESPONSE: "+p;
-}
+  let output =
+`SOP TYPE: ${sop.toUpperCase()}
 
-function pro(){
-  document.getElementById("proout").innerText="Core online (backend not attached yet)";
-}
+INPUT:
+${context}
 
-window.onload=()=>{
-  setTier(localStorage.getItem("tier")||"free");
-};
+OUTPUT (SIMULATED):
+- Step 1: Analyze request
+- Step 2: Structure response
+- Step 3: Execute workflow logic
+`;
+
+  if(apiKey){
+    output += "\nBYOK: ENABLED (key stored locally)";
+  } else {
+    output += "\nBYOK: OFF";
+  }
+
+  document.getElementById("out").innerText = output;
+}
 </script>
 
 </body>
