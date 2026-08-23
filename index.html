@@ -213,7 +213,7 @@ function saveKey(){
   alert("BYOK key saved");
 }
 
-function runSOP(){
+async function runSOP(){
   const sop = document.getElementById("sop").value;
   const context = document.getElementById("context").value;
 
@@ -222,25 +222,36 @@ function runSOP(){
     return;
   }
 
-  let output =
-`SOP TYPE: ${sop.toUpperCase()}
+  document.getElementById("out").innerText = "Generating SOP...";
 
-INPUT:
-${context}
+  try {
+    const prompt = `Generate a professional ${sop} Standard Operating Procedure based on this context:\n\n${context}\n\nProvide a structured, role-assigned SOP with clear steps.`;
 
-OUTPUT (SIMULATED):
-- Step 1: Analyze request
-- Step 2: Structure response
-- Step 3: Execute workflow logic
-`;
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey || 'YOUR_BACKEND_KEY_HERE',
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1024,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
 
-  if(apiKey){
-    output += "\nBYOK: ENABLED (key stored locally)";
-  } else {
-    output += "\nBYOK: OFF";
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const output = data.content[0].text;
+    document.getElementById("out").innerText = output;
+
+  } catch (error) {
+    document.getElementById("out").innerText = `❌ Error: ${error.message}\n\nTroubleshooting:\n- Save your BYOK API key\n- Check your internet connection\n- Try again`;
   }
-
-  document.getElementById("out").innerText = output;
 }
 </script>
 
