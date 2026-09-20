@@ -422,6 +422,11 @@ const CONFIG = {
   // server-side (non-blocking). Empty = local-only.
   LEAD_PROXY_URL: "https://bitefact.toastidtech.com/api/toastidready-lead",
 
+  // Entitlement tokens: the server counts the 5 free SOPs per token, so
+  // clearing browser storage can't reset the free balance.
+  TOKEN_URL: "https://bitefact.toastidtech.com/api/toastidready-token",
+  PAID_URL: "https://bitefact.toastidtech.com/api/toastidready-paid",
+
   // HubSpot Forms API fallback — only used if LEAD_PROXY_URL is empty.
   // Leave BOTH empty to keep leads local-only.
   HUBSPOT_PORTAL_ID: "",   // e.g. "12345678"
@@ -440,6 +445,7 @@ const CONFIG = {
 const LS_LEAD  = "toastidready_lead";
 const LS_COUNT = "toastidready_sop_count";
 const LS_PAID  = "toastidready_paid";
+const LS_TOKEN = "toastidready_token";
 
 const $ = id => document.getElementById(id);
 const state = {
@@ -498,22 +504,72 @@ function leadSaved(){
 function maybeLeadModal(){
   if (!leadSaved()) $("leadOverlay").classList.add("open");
 }
-function saveLead(name, email){
+/* ── Entitlement token (server counts the 5 free SOPs) ─────── */
+function getToken(){
+  try { return localStorage.getItem(LS_TOKEN) || null; } catch(e){ return null; }
+}
+function setToken(t){
+  try { if (t) localStorage.setItem(LS_TOKEN, t); } catch(e){}
+}
+// Returns the stored token, minting an anonymous one (server rate-limited
+// per IP) if the user has none yet — e.g. they skipped lead capture.
+async function ensureToken(){
+  let t = getToken();
+  if (t) return t;
+  const res = await fetch(CONFIG.TOKEN_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: "{}"
+  });
+  if (!res.ok) throw new Error("Token HTTP " + res.status);
+  const data = await res.json().catch(() => ({}));
+  if (!data || !data.token) throw new Error("No token issued");
+  setToken(data.token);
+  return data.token;
+}
+function storedSubscriptionID(){
+  try {
+    const p = JSON.parse(localStorage.getItem(LS_PAID) || "null");
+    return (p && p.subscriptionID) || null;
+  } catch(e){ return null; }
+}
+// Tell the server this token is paid (after PayPal approval). Idempotent.
+async function syncPaidToServer(){
+  const token = getToken(), sub = storedSubscriptionID();
+  if (!token || !sub) return false;
+  const r = await fetch(CONFIG.PAID_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token, subscriptionID: sub })
+  });
+  return r.ok;
+}
+function onFreeLimitReached(){
+  try { localStorage.setItem(LS_COUNT, String(CONFIG.FREE_SOP_LIMIT)); } catch(e){}
+  renderPill();
+  openPaywall();
+}
+
+async function saveLead(name, email){
   const lead = { name: name.trim(), email: email.trim(), ts: new Date().toISOString(), src: "toastidready" };
   try { localStorage.setItem(LS_LEAD, JSON.stringify(lead)); } catch(e){}
-  $("leadOverlay").classList.remove("open");
 
-  // Lead sync — fire and forget, NEVER blocks the app.
-  // Priority: LEAD_PROXY_URL (BiteFact backend, HubSpot server-side)
-  //   → HubSpot Forms API (if IDs set) → local-only.
+  // Lead sync — the backend returns our entitlement token, which the
+  // server uses to count the 5 free SOPs. Awaited so the token is stored
+  // before the user can generate (prevents minting a second anonymous token).
   if (CONFIG.LEAD_PROXY_URL && lead.email){
-    fetch(CONFIG.LEAD_PROXY_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: lead.name, email: lead.email })
-    }).then(r => {
+    try {
+      const r = await fetch(CONFIG.LEAD_PROXY_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: lead.name, email: lead.email })
+      });
+      const data = await r.json().catch(() => ({}));
+      if (data && data.token) setToken(data.token);
       if (!r.ok) console.info("[ToastidReady] Lead proxy returned", r.status);
-    }).catch(err => console.info("[ToastidReady] Lead proxy failed (non-blocking):", err.message));
+    } catch(err){
+      console.info("[ToastidReady] Lead proxy failed (non-blocking):", err.message);
+    }
   } else if (CONFIG.HUBSPOT_PORTAL_ID && CONFIG.HUBSPOT_FORM_GUID && lead.email){
     const url = `https://api.hsforms.com/submissions/v3/integration/submit/${CONFIG.HUBSPOT_PORTAL_ID}/${CONFIG.HUBSPOT_FORM_GUID}`;
     const firstname = lead.name.split(/\s+/)[0] || "";
@@ -621,17 +677,31 @@ function extractJSON(text){
   return JSON.parse(t.slice(start, end + 1));
 }
 
-async function callAI(system, userContent){
+async function callAI(system, userContent, _retried){
+  const token = await ensureToken();
   const res = await fetch(CONFIG.AI_PROXY_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
+      token: token,
       model: "claude-sonnet-4-6",
       max_tokens: 4000,
       system: system,
       messages: [{ role: "user", content: userContent }]
     })
   });
+  if (res.status === 402){
+    // Free limit reached server-side. If we believe we're paid locally but
+    // the server never got the memo (paid-sync failed), retry the sync once.
+    if (isPaid() && !_retried){
+      const ok = await syncPaidToServer().catch(() => false);
+      if (ok) return callAI(system, userContent, true);
+    }
+    onFreeLimitReached();
+    const err = new Error("Free limit reached");
+    err.code = "FREE_LIMIT";
+    throw err;
+  }
   if (!res.ok) throw new Error("Proxy returned HTTP " + res.status);
   const data = await res.json();
   const text = data && data.content && data.content[0] && data.content[0].text;
@@ -678,6 +748,7 @@ async function generate(){
     bumpCount();
     renderSOP();
   } catch(err){
+    if (err && err.code === "FREE_LIMIT") return; // paywall already opened
     console.error("[ToastidReady] generation failed:", err);
     showError("AI service unreachable",
       "We couldn't reach the AI service (" + err.message + "). Your answers are safe — fix the connection and try again. No fake content was generated.");
@@ -850,6 +921,9 @@ function openPaywall(){
           try {
             localStorage.setItem(LS_PAID, JSON.stringify({ ts: new Date().toISOString(), subscriptionID: data.subscriptionID }));
           } catch(e){}
+          // Tell the backend this token is paid (unlocks unlimited server-side).
+          // If the sync fails, the next generate call retries it automatically.
+          syncPaidToServer().catch(err => console.info("[ToastidReady] paid sync failed (will retry):", err.message));
           $("payOverlay").classList.remove("open");
           renderPill();
           toast("You're subscribed ✓ Unlimited SOPs unlocked.");
@@ -872,16 +946,21 @@ document.addEventListener("DOMContentLoaded", () => {
   $("ctaBuild").addEventListener("click", () => { maybeLeadModal(); startWizard(); });
   $("ctaBuild2").addEventListener("click", () => { maybeLeadModal(); startWizard(); });
 
-  $("leadSubmit").addEventListener("click", () => {
+  $("leadSubmit").addEventListener("click", async () => {
     const name = $("leadName").value, email = $("leadEmail").value.trim();
     if (!name.trim()){ toast("Add your name so we know what to call you."); return; }
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ toast("That email doesn't look right."); return; }
-    saveLead(name, email);
+    $("leadSubmit").disabled = true;
+    try { await saveLead(name, email); } finally { $("leadSubmit").disabled = false; }
+    $("leadOverlay").classList.remove("open");
     toast("You're in ✓");
   });
   $("leadSkip").addEventListener("click", () => {
     try { localStorage.setItem(LS_LEAD, JSON.stringify({ skipped: true, ts: new Date().toISOString() })); } catch(e){}
     $("leadOverlay").classList.remove("open");
+    // Pre-mint the anonymous entitlement token so the first generate call
+    // doesn't pay the token round-trip inside the generation flow.
+    ensureToken().catch(err => console.info("[ToastidReady] token pre-mint failed:", err.message));
   });
   // Don't trap keyboard users in the modal
   $("leadEmail").addEventListener("keydown", e => { if (e.key === "Enter") $("leadSubmit").click(); });
