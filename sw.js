@@ -1,26 +1,22 @@
-// ─── SOPilot Service Worker ───────────────────────────────────────────────
-// Toastid Tech LLC · sopilot-v7
+// ─── ToastidReady Service Worker ──────────────────────────────────────────
+// Toastid Tech LLC · toastidready-v1
 // Cache-first strategy for offline capability
 
-const CACHE_NAME = 'sopilot-v7';
+const CACHE_NAME = 'toastidready-v1';
 
 const STATIC_ASSETS = [
-  '/sopilot/',
-  '/sopilot/index.html',
-  '/sopilot/manifest.json',
-  '/sopilot/logo-192.png',
-  '/sopilot/logo-512.png'
-];
-
-const EXTERNAL_ASSETS = [
-  'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,300&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap'
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/logo-192.png',
+  '/logo-512.png'
 ];
 
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       return cache.addAll(STATIC_ASSETS).catch(err => {
-        console.warn('[SOPilot SW] Pre-cache failed for some assets:', err);
+        console.warn('[ToastidReady SW] Pre-cache failed for some assets:', err);
       });
     }).then(() => self.skipWaiting())
   );
@@ -33,7 +29,7 @@ self.addEventListener('activate', event => {
         keys
           .filter(key => key !== CACHE_NAME)
           .map(key => {
-            console.log('[SOPilot SW] Deleting old cache:', key);
+            console.log('[ToastidReady SW] Deleting old cache:', key);
             return caches.delete(key);
           })
       )
@@ -45,6 +41,7 @@ self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
 
+  // Never cache AI proxy traffic
   if (url.hostname.includes('workers.dev')) {
     return; // Let browser handle normally
   }
@@ -53,6 +50,12 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  // HubSpot form submissions — never cache
+  if (url.hostname.includes('hsforms.com')) {
+    return;
+  }
+
+  // Google Fonts: network-first, fall back to cache
   if (url.hostname.includes('fonts.googleapis.com') || url.hostname.includes('fonts.gstatic.com')) {
     event.respondWith(
       fetch(request)
@@ -66,6 +69,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  // App shell: cache-first
   event.respondWith(
     caches.match(request).then(cached => {
       if (cached) return cached;

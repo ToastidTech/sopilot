@@ -2,258 +2,911 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>SOPilot | Toastid Tech</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>ToastidReady | Toastid Tech</title>
+<meta name="description" content="ToastidReady — turn any business process into a professional, role-assigned Standard Operating Procedure in minutes. Powered by AI." />
+<meta name="theme-color" content="#0F0E0C" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" type="image/png" sizes="192x192" href="logo-192.png" />
+<link rel="apple-touch-icon" href="logo-192.png" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="ToastidReady" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
+/* ════════════════════════════════════════════════════════════════════
+   TOASTIDREADY — warm editorial brand
+   Ink #0F0E0C · Paper #F5F0E8 · Gold #C8943A
+   Fraunces (display) · DM Sans (body) · DM Mono (code/labels)
+   ════════════════════════════════════════════════════════════════════ */
 :root{
-  --bg:#070A12;
-  --panel:rgba(18,24,40,0.55);
-  --stroke:rgba(80,170,255,0.25);
-  --blue:#3aa0ff;
-  --blue2:#66d1ff;
-  --text:#eaf2ff;
-  --muted:#8ea2c0;
+  --ink:#0F0E0C;
+  --ink-soft:#2A2620;
+  --paper:#F5F0E8;
+  --paper-deep:#EDE5D3;
+  --sheet:#FCF9F2;
+  --gold:#C8943A;
+  --gold-deep:#9A6F24;
+  --rule:#E2D7BE;
+  --muted:#7A6F5C;
+  --danger:#A33B2E;
+  --radius:10px;
+  --shadow:0 10px 30px rgba(15,14,12,.12), 0 2px 6px rgba(15,14,12,.08);
 }
-
-*{
-  box-sizing:border-box;
-  font-family:system-ui,Segoe UI,Roboto,Arial;
-}
-
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
 body{
   margin:0;
-  background: radial-gradient(circle at top, #0d1a33, var(--bg));
-  color:var(--text);
+  font-family:"DM Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color:var(--ink);
+  background-color:var(--paper);
+  /* aged-paper feel: faint ruled lines + vignette */
+  background-image:
+    radial-gradient(1200px 500px at 50% -120px, rgba(200,148,58,.10), transparent 60%),
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(15,14,12,.028) 31px 32px);
+  min-height:100vh;
+  line-height:1.55;
 }
+h1,h2,h3,.serif{font-family:"Fraunces",Georgia,serif;font-weight:700;letter-spacing:-.01em}
+.mono{font-family:"DM Mono",ui-monospace,monospace}
 
-/* BACKGROUND ORBS */
-.bg-orb{
-  position:fixed;
-  width:600px;
-  height:600px;
-  background: radial-gradient(circle, rgba(58,160,255,0.25), transparent 60%);
-  filter: blur(40px);
-  z-index:0;
-}
-.orb1{ top:-200px; left:-200px; }
-.orb2{ bottom:-200px; right:-200px; }
-
-/* HEADER */
+/* ── Header ─────────────────────────────────────────────── */
 header{
-  position:sticky;
-  top:0;
-  z-index:10;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:12px 16px;
-  backdrop-filter: blur(18px);
-  background: rgba(10,14,25,0.6);
-  border-bottom:1px solid var(--stroke);
+  position:sticky;top:0;z-index:40;
+  background:var(--ink);color:var(--paper);
+  border-bottom:3px solid var(--gold);
+  padding:12px 18px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.brand{font-family:"Fraunces",serif;font-weight:900;font-size:20px;letter-spacing:.02em;line-height:1}
+.brand .gold{color:var(--gold)}
+.brand small{display:block;font-family:"DM Sans",sans-serif;font-weight:500;font-size:10px;letter-spacing:.28em;color:rgba(245,240,232,.55);margin-top:3px}
+.plan-pill{
+  font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.06em;
+  border:1px solid rgba(200,148,58,.55);color:var(--gold);
+  padding:6px 12px;border-radius:999px;white-space:nowrap;
 }
 
-.toastid{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-size:12px;
-  opacity:0.7;
-}
+/* ── Layout ─────────────────────────────────────────────── */
+.wrap{max-width:760px;margin:0 auto;padding:0 18px 90px}
+section.view{display:none;animation:fadeUp .35s ease}
+section.view.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-.sopilot{
-  font-weight:700;
-  letter-spacing:6px;
-  color:var(--blue2);
-  text-shadow:0 0 18px rgba(58,160,255,0.35);
+/* ── Hero ───────────────────────────────────────────────── */
+.hero{text-align:center;padding:52px 6px 10px}
+.eyebrow{
+  display:inline-block;font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.24em;
+  color:var(--gold-deep);border:1px solid var(--gold);border-radius:999px;
+  padding:6px 14px;margin-bottom:18px;background:rgba(200,148,58,.08);
 }
+.hero h1{font-size:clamp(34px,7.5vw,52px);line-height:1.08;margin:0 0 14px;font-weight:900}
+.hero h1 em{font-style:italic;color:var(--gold-deep)}
+.hero p.lede{font-size:17px;color:var(--ink-soft);max-width:34em;margin:0 auto 26px}
+.cta-row{display:flex;flex-direction:column;gap:12px;max-width:340px;margin:0 auto}
 
-.status{
-  font-size:12px;
-  color:var(--muted);
-  border:1px solid var(--stroke);
-  padding:6px 10px;
-  border-radius:999px;
+/* ── Buttons ────────────────────────────────────────────── */
+.btn{
+  display:inline-block;width:100%;padding:15px 22px;border-radius:var(--radius);
+  font-family:"DM Sans",sans-serif;font-weight:700;font-size:16px;letter-spacing:.01em;
+  border:none;cursor:pointer;text-align:center;text-decoration:none;
+  transition:transform .12s ease, box-shadow .12s ease, opacity .12s;
 }
+.btn:active{transform:scale(.98)}
+.btn-gold{background:linear-gradient(180deg,#D9A94E,var(--gold));color:var(--ink);box-shadow:0 6px 18px rgba(200,148,58,.35)}
+.btn-ink{background:var(--ink);color:var(--paper)}
+.btn-line{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+.btn[disabled]{opacity:.55;cursor:not-allowed;box-shadow:none}
+.btn-sm{width:auto;padding:10px 18px;font-size:14px}
 
-/* HERO */
-.hero{
-  text-align:center;
-  padding:40px 20px 20px;
-  position:relative;
+/* ── Cards / sheets ─────────────────────────────────────── */
+.sheet{
+  background:var(--sheet);border:1px solid var(--rule);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:22px;margin:22px 0;position:relative;
 }
+.sheet.ruled{
+  background-image:repeating-linear-gradient(0deg, transparent 0 30px, rgba(15,14,12,.045) 30px 31px);
+}
+.sheet h2{margin:0 0 6px;font-size:24px}
+.sheet .sub{color:var(--muted);font-size:14px;margin:0 0 16px}
+.gold-rule{height:2px;background:linear-gradient(90deg,var(--gold),transparent);border:0;margin:14px 0}
 
-.hero h1{
-  margin:10px 0 5px;
-  font-size:20px;
-}
+/* ── How it works / features ────────────────────────────── */
+.steps3{display:grid;gap:12px;margin:18px 0}
+@media(min-width:620px){.steps3{grid-template-columns:1fr 1fr 1fr}}
+.how-card{background:var(--sheet);border:1px solid var(--rule);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.how-card .n{font-family:"Fraunces",serif;font-size:30px;color:var(--gold);font-weight:900}
+.how-card h3{margin:6px 0;font-size:17px}
+.how-card p{margin:0;font-size:14px;color:var(--muted)}
+.feat-grid{display:grid;gap:12px;margin:18px 0}
+@media(min-width:620px){.feat-grid{grid-template-columns:1fr 1fr}}
+.feat{background:var(--sheet);border:1px solid var(--rule);border-radius:var(--radius);padding:16px}
+.feat h3{margin:0 0 6px;font-size:16px}
+.feat h3 .dot{color:var(--gold);margin-right:8px}
+.feat p{margin:0;font-size:14px;color:var(--muted)}
 
-.hero p{
-  color:var(--muted);
-  font-size:13px;
-}
+/* ── Pricing teaser ─────────────────────────────────────── */
+.price-card{text-align:center;background:var(--ink);color:var(--paper);border-radius:14px;padding:30px 22px;margin:26px 0;box-shadow:var(--shadow);border-top:3px solid var(--gold)}
+.price-card .per{font-family:"Fraunces",serif;font-size:46px;font-weight:900;color:var(--gold)}
+.price-card .per small{font-size:16px;color:rgba(245,240,232,.6);font-family:"DM Sans",sans-serif;font-weight:400}
+.price-card ul{list-style:none;padding:0;margin:16px 0;text-align:left;max-width:300px;margin-left:auto;margin-right:auto}
+.price-card li{padding:6px 0;font-size:15px}
+.price-card li::before{content:"✓ ";color:var(--gold);font-weight:700}
 
-/* CORE */
-.container{
-  max-width:900px;
-  margin:auto;
-  padding:20px;
-  position:relative;
-  z-index:2;
+/* ── Wizard ─────────────────────────────────────────────── */
+.wiz-steps{display:flex;gap:8px;margin:22px 0 6px}
+.wiz-step{flex:1;text-align:center;font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.08em;color:var(--muted);padding-top:10px;position:relative}
+.wiz-step::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--rule);border-radius:2px}
+.wiz-step.done{color:var(--gold-deep)}
+.wiz-step.done::before{background:var(--gold-deep)}
+.wiz-step.now{color:var(--ink);font-weight:700}
+.wiz-step.now::before{background:var(--gold)}
+.wiz-panel{display:none}
+.wiz-panel.active{display:block;animation:fadeUp .3s ease}
+label.f{display:block;font-weight:700;font-size:14px;margin:16px 0 6px}
+label.f .hint{display:block;font-weight:400;font-size:13px;color:var(--muted);margin-top:2px}
+input[type=text],input[type=email],textarea,select{
+  width:100%;padding:13px 14px;border-radius:8px;border:1.5px solid var(--rule);
+  background:#fff;font-family:"DM Sans",sans-serif;font-size:16px;color:var(--ink);
 }
+input:focus,textarea:focus,select:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+textarea{min-height:110px;resize:vertical}
+.role-row{display:flex;gap:8px;margin-bottom:8px}
+.role-row input{flex:1}
+.role-x{width:auto;padding:0 14px;background:transparent;border:1.5px solid var(--rule);border-radius:8px;color:var(--muted);font-size:18px;cursor:pointer}
+.wiz-nav{display:flex;gap:10px;margin-top:20px}
+.wiz-nav .btn{margin:0}
 
-/* CARD */
-.card{
-  background:var(--panel);
-  border:1px solid var(--stroke);
-  border-radius:14px;
-  padding:16px;
-  margin-bottom:14px;
-  backdrop-filter: blur(12px);
-}
+/* ── Generating ─────────────────────────────────────────── */
+.gen{text-align:center;padding:60px 20px}
+.quill{font-family:"Fraunces",serif;font-size:54px;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-10px) rotate(6deg)}}
+.gen h2{margin:16px 0 8px}
+.gen p{color:var(--muted)}
+.dots::after{content:"";animation:dots 1.2s steps(4) infinite}
+@keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
 
-.card h3{
-  margin:0 0 10px;
-  color:var(--blue2);
-}
+/* ── SOP document ───────────────────────────────────────── */
+.sop-doc{background:var(--sheet);border:1px solid var(--rule);border-radius:6px;box-shadow:var(--shadow);padding:26px 22px;margin:22px 0;
+  background-image:repeating-linear-gradient(0deg, transparent 0 30px, rgba(15,14,12,.05) 30px 31px);}
+.sop-eyebrow{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.26em;color:var(--gold-deep);margin-bottom:8px}
+.sop-doc h2{font-size:30px;margin:0 0 10px;line-height:1.15}
+.sop-purpose{font-size:15px;color:var(--ink-soft);border-left:3px solid var(--gold);padding-left:14px;margin:14px 0;font-style:italic}
+.role-chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.chip{font-family:"DM Mono",monospace;font-size:12px;background:var(--ink);color:var(--paper);border-radius:999px;padding:6px 13px}
+.prog-wrap{margin:18px 0 6px}
+.prog-meta{display:flex;justify-content:space-between;font-family:"DM Mono",monospace;font-size:12px;color:var(--muted);margin-bottom:6px}
+.prog{height:10px;background:var(--paper-deep);border:1px solid var(--rule);border-radius:999px;overflow:hidden}
+.prog > div{height:100%;width:0;background:linear-gradient(90deg,var(--gold-deep),var(--gold));border-radius:999px;transition:width .3s ease}
+.step{display:flex;gap:12px;padding:14px 4px;border-bottom:1px dashed var(--rule);cursor:pointer;align-items:flex-start}
+.step:last-child{border-bottom:0}
+.step input[type=checkbox]{display:none}
+.box{flex:0 0 24px;height:24px;border:2px solid var(--gold-deep);border-radius:6px;margin-top:2px;position:relative;background:#fff}
+.step.done .box{background:var(--gold);border-color:var(--gold)}
+.step.done .box::after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--ink);font-weight:900;font-size:15px}
+.step .num{font-family:"Fraunces",serif;font-weight:900;color:var(--gold-deep);font-size:18px;min-width:28px}
+.step .body{flex:1}
+.step .role-badge{display:inline-block;font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.05em;background:rgba(200,148,58,.16);border:1px solid var(--gold);color:var(--gold-deep);border-radius:4px;padding:2px 8px;margin-bottom:5px}
+.step .t{font-weight:700;font-size:15px}
+.step.done .t{text-decoration:line-through;color:var(--muted)}
+.step .d{font-size:14px;color:var(--ink-soft);margin-top:3px}
+.tips{margin:16px 0 0;padding:0;list-style:none}
+.tips li{font-size:14px;padding:8px 0 8px 26px;position:relative;color:var(--ink-soft)}
+.tips li::before{content:"✦";position:absolute;left:2px;color:var(--gold)}
+.doc-actions{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+@media(min-width:620px){.doc-actions{flex-direction:row}.doc-actions .btn{width:auto;flex:1}}
 
-/* INPUTS */
-select, textarea, input{
-  width:100%;
-  padding:10px;
-  margin-top:8px;
-  border-radius:10px;
-  border:1px solid var(--stroke);
-  background:rgba(0,0,0,0.25);
-  color:var(--text);
-}
+/* ── Refinement chat ────────────────────────────────────── */
+.chat{margin-top:20px;border-top:2px solid var(--rule);padding-top:16px}
+.chat h3{margin:0 0 4px;font-size:18px}
+.chat .sub{font-size:13px;color:var(--muted);margin:0 0 12px}
+.msgs{max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.msg{padding:10px 14px;border-radius:12px;font-size:14px;max-width:88%}
+.msg.you{align-self:flex-end;background:var(--ink);color:var(--paper);border-bottom-right-radius:4px}
+.msg.ai{align-self:flex-start;background:var(--paper-deep);border:1px solid var(--rule);border-bottom-left-radius:4px}
+.chat-row{display:flex;gap:8px}
+.chat-row input{flex:1}
+.chat-row button{width:auto;padding:0 20px;background:var(--ink);color:var(--paper);border:none;border-radius:8px;font-weight:700;cursor:pointer}
 
-button{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  border-radius:10px;
-  border:none;
-  cursor:pointer;
-  background:linear-gradient(90deg,var(--blue),var(--blue2));
-  color:white;
-  font-weight:600;
-}
+/* ── Error card ─────────────────────────────────────────── */
+.err{background:#FBEFEC;border:1.5px solid var(--danger);border-radius:var(--radius);padding:18px;margin:22px 0}
+.err h3{margin:0 0 6px;color:var(--danger);font-size:17px}
+.err p{margin:6px 0;font-size:14px}
+.err code{font-family:"DM Mono",monospace;font-size:12px;background:rgba(163,59,46,.1);padding:2px 6px;border-radius:4px;word-break:break-all}
 
-button.secondary{
-  background:transparent;
-  border:1px solid var(--stroke);
-  color:var(--blue2);
-}
+/* ── Modals ─────────────────────────────────────────────── */
+.overlay{position:fixed;inset:0;background:rgba(15,14,12,.62);z-index:60;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px)}
+.overlay.open{display:flex;animation:fadeUp .25s ease}
+.dialog{background:var(--sheet);border-radius:14px;max-width:420px;width:100%;padding:28px 24px;box-shadow:0 24px 60px rgba(0,0,0,.35);border-top:4px solid var(--gold);max-height:90vh;overflow-y:auto}
+.dialog h2{margin:0 0 6px;font-size:26px}
+.dialog .sub{color:var(--muted);font-size:14px;margin:0 0 14px}
+.dialog .fine{font-size:12px;color:var(--muted);margin-top:12px;text-align:center}
+.skip{display:block;text-align:center;margin-top:10px;font-size:13px;color:var(--muted);text-decoration:underline;cursor:pointer;background:none;border:none;width:100%}
 
-.output{
-  margin-top:10px;
-  font-size:13px;
-  color:var(--muted);
-  white-space:pre-wrap;
-}
+/* ── Toast ──────────────────────────────────────────────── */
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(80px);background:var(--ink);color:var(--paper);padding:12px 22px;border-radius:999px;font-size:14px;font-weight:600;z-index:80;transition:transform .3s ease;box-shadow:var(--shadow);max-width:90vw;text-align:center}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+footer{margin-top:50px;padding:26px 0 10px;border-top:1px solid var(--rule);text-align:center;color:var(--muted);font-size:13px}
+footer .fbrand{font-family:"Fraunces",serif;font-weight:900;color:var(--ink);font-size:17px}
+footer a{color:var(--gold-deep)}
 </style>
 </head>
-
 <body>
-
-<div class="bg-orb orb1"></div>
-<div class="bg-orb orb2"></div>
-
 <header>
-  <div class="toastid">TOASTID TECH</div>
-  <div class="sopilot">SOPILOT</div>
-  <div class="status" id="status">FREE MODE</div>
+  <div class="brand">Toastid<span class="gold">Ready</span><small>TOASTID TECH LLC</small></div>
+  <div class="plan-pill" id="planPill">FREE · 0/5 USED</div>
 </header>
 
-<div class="hero">
-  <h1>Structured SOP Execution Engine</h1>
-  <p>Select a SOP → Provide context → Generate output</p>
+<div class="wrap">
+
+  <!-- ══════════ LANDING ══════════ -->
+  <section class="view active" id="view-landing">
+    <div class="hero">
+      <span class="eyebrow">AI SOP BUILDER</span>
+      <h1>Turn any process into a <em>professional SOP</em> in minutes.</h1>
+      <p class="lede">Describe the way your business runs. ToastidReady drafts a complete, role-assigned Standard Operating Procedure — formatted like a document you'd be proud to hand an auditor.</p>
+      <div class="cta-row">
+        <button class="btn btn-gold" id="ctaBuild">✒ Build my SOP</button>
+        <a class="btn btn-line" href="#how">See how it works</a>
+      </div>
+    </div>
+
+    <div id="how" class="steps3">
+      <div class="how-card"><div class="n">1</div><h3>Describe the process</h3><p>Tell us what happens, in plain English. No templates, no jargon.</p></div>
+      <div class="how-card"><div class="n">2</div><h3>Assign the roles</h3><p>List the job titles involved. Every step gets an owner.</p></div>
+      <div class="how-card"><div class="n">3</div><h3>Get your SOP</h3><p>A polished, interactive document — checklist, progress tracking, and one-tap copy.</p></div>
+    </div>
+
+    <div class="feat-grid">
+      <div class="feat"><h3><span class="dot">✦</span>Role-assigned steps</h3><p>Every step is tagged with the job title responsible. No ambiguity about who does what.</p></div>
+      <div class="feat"><h3><span class="dot">✦</span>Interactive checklist</h3><p>Tap steps to mark them done. Watch the progress bar move — built for real execution.</p></div>
+      <div class="feat"><h3><span class="dot">✦</span>Refinement chat</h3><p>Ask ToastidReady to revise, add steps, or change the tone. The document updates instantly.</p></div>
+      <div class="feat"><h3><span class="dot">✦</span>Copy anywhere</h3><p>One tap exports clean plaintext — paste into docs, email, or your team wiki.</p></div>
+    </div>
+
+    <div class="price-card">
+      <div class="eyebrow" style="border-color:rgba(200,148,58,.5)">SIMPLE PRICING</div>
+      <div class="per">$9.99<small>/month</small></div>
+      <ul>
+        <li>Unlimited SOPs, unlimited revisions</li>
+        <li>Role assignment &amp; checklists</li>
+        <li>Refinement chat</li>
+      </ul>
+      <p style="color:rgba(245,240,232,.65);font-size:14px;margin:0 0 14px">Start free — your first 5 SOPs are on us.</p>
+      <button class="btn btn-gold" id="ctaBuild2" style="max-width:280px;margin:0 auto">Start free</button>
+    </div>
+
+    <div class="sheet ruled">
+      <h2>Who it's for</h2>
+      <p class="sub">Built for the businesses that run on process — even if nobody's written it down yet.</p>
+      <hr class="gold-rule" />
+      <p style="font-size:15px;margin:0">Small business owners who need SOPs but don't have time to write them. Office managers standardizing how the team works. Consultants delivering SOPs to clients. Anyone getting ready for a compliance audit — or for growth.</p>
+    </div>
+  </section>
+
+  <!-- ══════════ WIZARD ══════════ -->
+  <section class="view" id="view-wizard">
+    <div class="wiz-steps">
+      <div class="wiz-step now" id="ws1">1 · PROCESS</div>
+      <div class="wiz-step" id="ws2">2 · ROLES</div>
+      <div class="wiz-step" id="ws3">3 · DETAILS</div>
+    </div>
+
+    <div class="sheet">
+      <div class="wiz-panel active" id="wp1">
+        <h2>The process</h2>
+        <p class="sub">Start with the basics — what are we documenting?</p>
+        <label class="f">Process name<span class="hint">e.g. "Opening the store", "New client onboarding"</span></label>
+        <input type="text" id="f-name" placeholder="Opening the store" autocomplete="off" />
+        <label class="f">What kind of business?<span class="hint">e.g. "Coffee shop", "HVAC company", "Law office"</span></label>
+        <input type="text" id="f-biz" placeholder="Coffee shop" autocomplete="off" />
+        <label class="f">Describe the process<span class="hint">Plain English is perfect — what happens, start to finish?</span></label>
+        <textarea id="f-desc" placeholder="Every morning we unlock, brew the first batch, count the register, wipe down the counters, and put the open sign out by 6:55 AM…"></textarea>
+      </div>
+
+      <div class="wiz-panel" id="wp2">
+        <h2>Who does the work?</h2>
+        <p class="sub">Add each job title involved. Every SOP step will be assigned to one of these roles.</p>
+        <div id="roles"></div>
+        <button class="btn btn-line btn-sm" id="addRole" type="button">+ Add another role</button>
+      </div>
+
+      <div class="wiz-panel" id="wp3">
+        <h2>The details</h2>
+        <p class="sub">Everything here is optional — but it makes the SOP sharper.</p>
+        <label class="f">How often does this run?</label>
+        <select id="f-freq">
+          <option>Daily</option><option>Weekly</option><option>Monthly</option><option>As needed</option>
+        </select>
+        <label class="f">Tools or systems used<span class="hint">e.g. "Square POS, espresso machine, cleaning checklist"</span></label>
+        <input type="text" id="f-tools" placeholder="Square POS, espresso machine…" autocomplete="off" />
+        <label class="f">Tone</label>
+        <select id="f-tone">
+          <option>Professional</option><option>Friendly</option><option>Strict / formal</option>
+        </select>
+        <label class="f">Anything else?<span class="hint">Requirements, edge cases, things people always forget…</span></label>
+        <textarea id="f-notes" placeholder="Health-code rule: sanitizer must test at 200ppm…"></textarea>
+      </div>
+
+      <div class="wiz-nav">
+        <button class="btn btn-line" id="wizBack" type="button">← Back</button>
+        <button class="btn btn-gold" id="wizNext" type="button">Continue →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ GENERATING ══════════ -->
+  <section class="view" id="view-generating">
+    <div class="sheet gen">
+      <div class="quill">✒</div>
+      <h2>Drafting your SOP<span class="dots"></span></h2>
+      <p id="genSub">ToastidReady is writing, assigning roles, and formatting your document.</p>
+    </div>
+  </section>
+
+  <!-- ══════════ RESULT ══════════ -->
+  <section class="view" id="view-result">
+    <div id="errSlot"></div>
+    <div id="sopSlot"></div>
+
+    <div class="chat sheet" id="chatPanel" style="display:none">
+      <h3>Refine it</h3>
+      <p class="sub">Ask for changes — "add a closing step", "make it friendlier", "split step 4 in two".</p>
+      <div class="msgs" id="msgs"></div>
+      <div class="chat-row">
+        <input type="text" id="chatInput" placeholder="How should I change it?" autocomplete="off" />
+        <button id="chatSend" type="button">Send</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="fbrand">ToastidReady</div>
+    <div>by <a href="https://toastidtech.com">Toastid Tech LLC</a> · (479) 339-1504</div>
+    <div style="margin-top:6px">© 2026 Toastid Tech LLC. All rights reserved.</div>
+  </footer>
 </div>
 
-<div class="container">
-
-  <!-- SOP SELECTOR -->
-  <div class="card">
-    <h3>SOP Selector</h3>
-    <select id="sop">
-      <option value="content">Content Creation SOP</option>
-      <option value="marketing">Marketing SOP</option>
-      <option value="client">Client Reply SOP</option>
-      <option value="strategy">Strategy SOP</option>
-      <option value="custom">Custom SOP</option>
-    </select>
+<!-- ══════════ LEAD MODAL ══════════ -->
+<div class="overlay" id="leadOverlay">
+  <div class="dialog">
+    <span class="eyebrow">BEFORE YOU START</span>
+    <h2>Get your SOPs by email too</h2>
+    <p class="sub">Drop your name and email and we'll send product updates — plus your first 5 SOPs are free either way.</p>
+    <label class="f">Name</label>
+    <input type="text" id="leadName" placeholder="Jordan Smith" autocomplete="name" />
+    <label class="f">Email</label>
+    <input type="email" id="leadEmail" placeholder="you@business.com" autocomplete="email" />
+    <button class="btn btn-gold" id="leadSubmit" type="button" style="margin-top:16px">Continue →</button>
+    <button class="skip" id="leadSkip" type="button">Skip for now</button>
+    <p class="fine">We never sell your info. Unsubscribe anytime.</p>
   </div>
-
-  <!-- INPUT -->
-  <div class="card">
-    <h3>Input Context</h3>
-    <textarea id="context" placeholder="Describe what you need..."></textarea>
-
-    <button onclick="runSOP()">Generate SOP Output</button>
-    <button class="secondary" onclick="saveKey()">Save BYOK Key (optional)</button>
-
-    <input id="key" type="password" placeholder="BYOK API Key (optional)"/>
-    <div class="output" id="out"></div>
-  </div>
-
 </div>
+
+<!-- ══════════ PAYWALL MODAL ══════════ -->
+<div class="overlay" id="payOverlay">
+  <div class="dialog" style="text-align:center">
+    <span class="eyebrow">FREE TRIAL COMPLETE</span>
+    <h2>You've used your 5 free SOPs</h2>
+    <p class="sub">Keep the momentum — unlimited SOPs, unlimited revisions, and refinement chat.</p>
+    <div class="per" style="font-family:Fraunces,serif;font-size:44px;font-weight:900;color:var(--gold-deep)">$9.99<small style="font-size:15px;font-family:'DM Sans',sans-serif;font-weight:400;color:var(--muted)">/month</small></div>
+    <!-- PayPal subscribe button ($9.99/mo recurring). Rendered lazily when the
+         paywall opens so it sizes correctly. -->
+    <div id="paypal-button-container-P-67U912464C985111UNKYGCRI" style="margin-top:16px"></div>
+    <button class="skip" id="payClose" type="button">Not right now</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- PayPal SDK for the $9.99/mo subscribe button in the paywall -->
+<script src="https://www.paypal.com/sdk/js?client-id=BAA_bwsA-47MoqZ3z6GT6zqk5wTbTVOH3nMUJGGLX-5Xs87BOAIbiMS319_tABrb_kKD_cOLC4XXC8S3Dc&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
 
 <script>
-let apiKey = localStorage.getItem("apiKey") || null;
+"use strict";
+/* ═══════════════════════════════════════════════════════════════════════════
+   ★ SEAN: FILL THESE IN ★
+   These five values are the only things you need to touch before launch.
+   Everything else works out of the box.
+   ═══════════════════════════════════════════════════════════════════════════ */
+const CONFIG = {
+  // AI proxy: BiteFact backend forwards to the Anthropic Messages API
+  // (server injects the key; the PWA never sees it). No Cloudflare needed.
+  AI_PROXY_URL: "https://bitefact.toastidtech.com/api/toastidready-generate",
 
-function saveKey(){
-  const key = document.getElementById("key").value.trim();
-  if(!key){
-    alert("No key entered");
-    return;
-  }
-  apiKey = key;
-  localStorage.setItem("apiKey", key);
-  alert("BYOK key saved");
+  // Lead capture: BiteFact backend saves the lead + syncs to HubSpot
+  // server-side (non-blocking). Empty = local-only.
+  LEAD_PROXY_URL: "https://bitefact.toastidtech.com/api/toastidready-lead",
+
+  // HubSpot Forms API fallback — only used if LEAD_PROXY_URL is empty.
+  // Leave BOTH empty to keep leads local-only.
+  HUBSPOT_PORTAL_ID: "",   // e.g. "12345678"
+  HUBSPOT_FORM_GUID: "",   // HubSpot form GUID
+
+  // $9.99/mo payment link (PayPal, added 2026-09-20).
+  // Kept for reference — the paywall now uses the embedded PayPal
+  // subscribe button (plan P-67U912464C985111UNKYGCRI) instead.
+  PAYMENT_URL: "https://www.paypal.com/ncp/payment/8C8H8EN43L9J4",
+
+  // Free SOP generations before the paywall appears.
+  FREE_SOP_LIMIT: 5
+};
+/* ═══════════════ end of SEAN config — do not edit below ═══════════════ */
+
+const LS_LEAD  = "toastidready_lead";
+const LS_COUNT = "toastidready_sop_count";
+const LS_PAID  = "toastidready_paid";
+
+const $ = id => document.getElementById(id);
+const state = {
+  wizStep: 1,
+  roles: ["", ""],
+  sop: null,          // parsed SOP JSON
+  checked: new Set(), // checked step indexes
+  refining: false
+};
+
+/* ── Toast ─────────────────────────────────────────────────── */
+let toastT = null;
+function toast(msg){
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastT);
+  toastT = setTimeout(() => t.classList.remove("show"), 2600);
 }
 
-async function runSOP(){
-  const sop = document.getElementById("sop").value;
-  const context = document.getElementById("context").value;
+/* ── View router ───────────────────────────────────────────── */
+function show(id){
+  document.querySelectorAll("section.view").forEach(s => s.classList.remove("active"));
+  $("view-" + id).classList.add("active");
+  window.scrollTo({top:0, behavior:"smooth"});
+}
 
-  if(!context){
-    document.getElementById("out").innerText = "Please enter context.";
-    return;
-  }
+/* ── Plan pill / freemium ──────────────────────────────────── */
+function sopCount(){
+  return parseInt(localStorage.getItem(LS_COUNT) || "0", 10);
+}
+function bumpCount(){
+  localStorage.setItem(LS_COUNT, String(sopCount() + 1));
+  renderPill();
+}
+function renderPill(){
+  if (isPaid()){ $("planPill").textContent = "PRO · UNLIMITED"; return; }
+  const used = sopCount();
+  $("planPill").textContent = used >= CONFIG.FREE_SOP_LIMIT
+    ? "LIMIT REACHED"
+    : `FREE · ${used}/${CONFIG.FREE_SOP_LIMIT} USED`;
+}
+function isPaid(){
+  try { return !!JSON.parse(localStorage.getItem(LS_PAID) || "null"); }
+  catch(e){ return false; }
+}
+function paywalled(){
+  return !isPaid() && sopCount() >= CONFIG.FREE_SOP_LIMIT;
+}
 
-  document.getElementById("out").innerText = "Generating SOP...";
+/* ── Lead capture ──────────────────────────────────────────── */
+function leadSaved(){
+  try { return !!JSON.parse(localStorage.getItem(LS_LEAD) || "null"); }
+  catch(e){ return false; }
+}
+function maybeLeadModal(){
+  if (!leadSaved()) $("leadOverlay").classList.add("open");
+}
+function saveLead(name, email){
+  const lead = { name: name.trim(), email: email.trim(), ts: new Date().toISOString(), src: "toastidready" };
+  try { localStorage.setItem(LS_LEAD, JSON.stringify(lead)); } catch(e){}
+  $("leadOverlay").classList.remove("open");
 
-  try {
-    const prompt = `Generate a professional ${sop} Standard Operating Procedure based on this context:\n\n${context}\n\nProvide a structured, role-assigned SOP with clear steps.`;
-
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey || 'YOUR_BACKEND_KEY_HERE',
-        'anthropic-version': '2023-06-01'
-      },
+  // Lead sync — fire and forget, NEVER blocks the app.
+  // Priority: LEAD_PROXY_URL (BiteFact backend, HubSpot server-side)
+  //   → HubSpot Forms API (if IDs set) → local-only.
+  if (CONFIG.LEAD_PROXY_URL && lead.email){
+    fetch(CONFIG.LEAD_PROXY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: lead.name, email: lead.email })
+    }).then(r => {
+      if (!r.ok) console.info("[ToastidReady] Lead proxy returned", r.status);
+    }).catch(err => console.info("[ToastidReady] Lead proxy failed (non-blocking):", err.message));
+  } else if (CONFIG.HUBSPOT_PORTAL_ID && CONFIG.HUBSPOT_FORM_GUID && lead.email){
+    const url = `https://api.hsforms.com/submissions/v3/integration/submit/${CONFIG.HUBSPOT_PORTAL_ID}/${CONFIG.HUBSPOT_FORM_GUID}`;
+    const firstname = lead.name.split(/\s+/)[0] || "";
+    fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1024,
-        messages: [{ role: 'user', content: prompt }]
+        fields: [
+          { name: "firstname", value: firstname },
+          { name: "email", value: lead.email }
+        ],
+        context: { pageUri: location.href, pageName: "ToastidReady" }
       })
-    });
-
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const output = data.content[0].text;
-    document.getElementById("out").innerText = output;
-
-  } catch (error) {
-    document.getElementById("out").innerText = `❌ Error: ${error.message}\n\nTroubleshooting:\n- Save your BYOK API key\n- Check your internet connection\n- Try again`;
+    }).then(r => {
+      if (!r.ok) console.info("[ToastidReady] HubSpot lead post returned", r.status);
+    }).catch(err => console.info("[ToastidReady] HubSpot lead post failed (non-blocking):", err.message));
+  } else {
+    console.info("[ToastidReady] Lead saved locally (HubSpot not configured).");
   }
 }
-</script>
 
+/* ── Wizard ────────────────────────────────────────────────── */
+function renderRoles(){
+  const box = $("roles");
+  box.innerHTML = "";
+  state.roles.forEach((val, i) => {
+    const row = document.createElement("div");
+    row.className = "role-row";
+    const inp = document.createElement("input");
+    inp.type = "text";
+    inp.placeholder = i === 0 ? "e.g. Store Manager" : "e.g. Barista";
+    inp.value = val;
+    inp.autocomplete = "off";
+    inp.addEventListener("input", e => { state.roles[i] = e.target.value; });
+    const x = document.createElement("button");
+    x.type = "button"; x.className = "role-x"; x.textContent = "×";
+    x.title = "Remove role";
+    x.addEventListener("click", () => {
+      if (state.roles.length <= 1){ toast("Keep at least one role."); return; }
+      state.roles.splice(i, 1);
+      renderRoles();
+    });
+    row.appendChild(inp); row.appendChild(x);
+    box.appendChild(row);
+  });
+}
+function wizGo(n){
+  state.wizStep = Math.min(3, Math.max(1, n));
+  [1,2,3].forEach(i => {
+    $("wp" + i).classList.toggle("active", i === state.wizStep);
+    const el = $("ws" + i);
+    el.classList.toggle("now", i === state.wizStep);
+    el.classList.toggle("done", i < state.wizStep);
+  });
+  $("wizBack").style.visibility = state.wizStep === 1 ? "hidden" : "visible";
+  $("wizNext").textContent = state.wizStep === 3 ? "Generate my SOP ✒" : "Continue →";
+}
+function wizValidate(){
+  if (state.wizStep === 1){
+    if (!$("f-name").value.trim()){ toast("Give your process a name."); return false; }
+    if (!$("f-desc").value.trim()){ toast("Describe the process first."); return false; }
+  }
+  if (state.wizStep === 2){
+    const filled = state.roles.map(r => r.trim()).filter(Boolean);
+    if (!filled.length){ toast("Add at least one role."); return false; }
+    state.roles = filled;
+  }
+  return true;
+}
+function startWizard(){
+  if (paywalled()){ openPaywall(); return; }
+  state.wizStep = 1;
+  wizGo(1);
+  renderRoles();
+  show("wizard");
+}
+
+/* ── AI generation ─────────────────────────────────────────── */
+const GEN_SYSTEM = `You are ToastidReady, an expert SOP (Standard Operating Procedure) writer for small businesses.
+Return ONLY a single JSON object — no markdown fences, no commentary, no extra text.
+Shape:
+{
+  "title": "string — clear SOP title",
+  "purpose": "string — 2-3 sentences on why this SOP exists",
+  "roles": ["string — each job title involved"],
+  "steps": [
+    {"role": "string — must be one of roles", "title": "string — short step name", "detail": "string — 1-3 sentences of how-to"}
+  ],
+  "tips": ["string — 3-5 practical pro tips"]
+}
+Rules: 6-12 steps. Every step assigned to exactly one role from roles. Concrete, actionable language. Match the requested tone.`;
+
+const REFINE_SYSTEM = `You are ToastidReady, an expert SOP writer.
+You will receive the current SOP as JSON plus a revision request from the user.
+Return the FULL updated SOP as a single JSON object with the exact same shape:
+{"title": "...", "purpose": "...", "roles": ["..."], "steps": [{"role": "...", "title": "...", "detail": "..."}], "tips": ["..."]}
+Return ONLY the JSON — no markdown fences, no commentary.`;
+
+function extractJSON(text){
+  // Strip markdown fences if the model added them anyway.
+  let t = String(text).trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/, "");
+  const start = t.indexOf("{");
+  const end = t.lastIndexOf("}");
+  if (start === -1 || end === -1 || end <= start) throw new Error("No JSON object found in AI response.");
+  return JSON.parse(t.slice(start, end + 1));
+}
+
+async function callAI(system, userContent){
+  const res = await fetch(CONFIG.AI_PROXY_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 4000,
+      system: system,
+      messages: [{ role: "user", content: userContent }]
+    })
+  });
+  if (!res.ok) throw new Error("Proxy returned HTTP " + res.status);
+  const data = await res.json();
+  const text = data && data.content && data.content[0] && data.content[0].text;
+  if (!text) throw new Error("Empty response from AI service.");
+  return extractJSON(text);
+}
+
+function buildUserContent(){
+  const L = [];
+  L.push("Process name: " + $("f-name").value.trim());
+  const biz = $("f-biz").value.trim();
+  if (biz) L.push("Business type: " + biz);
+  L.push("Description: " + $("f-desc").value.trim());
+  L.push("Roles involved: " + state.roles.join(", "));
+  L.push("Frequency: " + $("f-freq").value);
+  const tools = $("f-tools").value.trim();
+  if (tools) L.push("Tools/systems: " + tools);
+  L.push("Tone: " + $("f-tone").value);
+  const notes = $("f-notes").value.trim();
+  if (notes) L.push("Additional notes: " + notes);
+  return L.join("\n");
+}
+
+function showError(title, detail){
+  $("sopSlot").innerHTML = "";
+  $("chatPanel").style.display = "none";
+  $("errSlot").innerHTML =
+    '<div class="err"><h3>⚠ ' + esc(title) + '</h3><p>' + esc(detail) + '</p>' +
+    '<p style="color:var(--muted)">Check <code>AI_PROXY_URL</code> in the CONFIG block at the top of this file\'s script. ' +
+    'The proxy must accept POST with an Anthropic Messages API body and return the Anthropic response.</p></div>';
+  show("result");
+}
+
+async function generate(){
+  if (paywalled()){ openPaywall(); return; }
+  $("genSub").textContent = "ToastidReady is writing, assigning roles, and formatting your document.";
+  show("generating");
+  $("errSlot").innerHTML = "";
+  try {
+    const sop = await callAI(GEN_SYSTEM, buildUserContent());
+    validateSOP(sop);
+    state.sop = sop;
+    state.checked = new Set();
+    bumpCount();
+    renderSOP();
+  } catch(err){
+    console.error("[ToastidReady] generation failed:", err);
+    showError("AI service unreachable",
+      "We couldn't reach the AI service (" + err.message + "). Your answers are safe — fix the connection and try again. No fake content was generated.");
+  }
+}
+
+function validateSOP(sop){
+  if (!sop || typeof sop !== "object") throw new Error("Invalid SOP shape.");
+  if (!sop.title || !Array.isArray(sop.steps) || !sop.steps.length) throw new Error("SOP missing title or steps.");
+  if (!Array.isArray(sop.roles)) sop.roles = [];
+  if (!Array.isArray(sop.tips)) sop.tips = [];
+}
+
+/* ── Render result ─────────────────────────────────────────── */
+function esc(s){
+  return String(s == null ? "" : s)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+
+function renderSOP(){
+  const sop = state.sop;
+  if (!sop) return;
+  $("errSlot").innerHTML = "";
+  const total = sop.steps.length;
+  const done = state.checked.size;
+  const pct = total ? Math.round(done / total * 100) : 0;
+
+  let html = '<div class="sop-doc">';
+  html += '<div class="sop-eyebrow">STANDARD OPERATING PROCEDURE</div>';
+  html += '<h2>' + esc(sop.title) + '</h2>';
+  if (sop.purpose) html += '<p class="sop-purpose">' + esc(sop.purpose) + '</p>';
+  if (sop.roles.length){
+    html += '<div class="role-chips">' + sop.roles.map(r => '<span class="chip">' + esc(r) + '</span>').join("") + '</div>';
+  }
+  html += '<div class="prog-wrap"><div class="prog-meta"><span>EXECUTION CHECKLIST</span><span>' + done + '/' + total + ' · ' + pct + '%</span></div>';
+  html += '<div class="prog"><div style="width:' + pct + '%"></div></div></div>';
+  html += '<div id="stepList">';
+  sop.steps.forEach((st, i) => {
+    const isDone = state.checked.has(i);
+    html += '<div class="step' + (isDone ? " done" : "") + '" data-i="' + i + '">' +
+      '<input type="checkbox" ' + (isDone ? "checked" : "") + ' tabindex="-1" />' +
+      '<span class="box"></span>' +
+      '<span class="num">' + (i + 1) + '</span>' +
+      '<span class="body"><span class="role-badge">' + esc(st.role || "—") + '</span><br/>' +
+      '<span class="t">' + esc(st.title) + '</span>' +
+      (st.detail ? '<div class="d">' + esc(st.detail) + '</div>' : "") +
+      '</span></div>';
+  });
+  html += '</div>';
+  if (sop.tips.length){
+    html += '<h3 style="margin:18px 0 4px;font-size:18px">Pro tips</h3><ul class="tips">' +
+      sop.tips.map(t => '<li>' + esc(t) + '</li>').join("") + '</ul>';
+  }
+  html += '<div class="doc-actions">' +
+    '<button class="btn btn-ink" id="btnCopy" type="button">⧉ Copy SOP</button>' +
+    '<button class="btn btn-line" id="btnRefine" type="button">✎ Refine</button>' +
+    '<button class="btn btn-line" id="btnNew" type="button">＋ New SOP</button>' +
+    '</div>';
+  html += '</div>';
+
+  $("sopSlot").innerHTML = html;
+
+  document.querySelectorAll("#stepList .step").forEach(el => {
+    el.addEventListener("click", () => {
+      const i = parseInt(el.dataset.i, 10);
+      if (state.checked.has(i)) state.checked.delete(i); else state.checked.add(i);
+      renderSOP();
+    });
+  });
+  $("btnCopy").addEventListener("click", copySOP);
+  $("btnRefine").addEventListener("click", () => {
+    const p = $("chatPanel");
+    p.style.display = p.style.display === "none" ? "block" : "none";
+    if (p.style.display === "block") $("chatInput").focus();
+  });
+  $("btnNew").addEventListener("click", startWizard);
+  show("result");
+}
+
+/* ── Copy to clipboard ─────────────────────────────────────── */
+function sopPlaintext(){
+  const sop = state.sop;
+  const L = [];
+  L.push(String(sop.title).toUpperCase());
+  L.push("=".repeat(Math.min(String(sop.title).length, 60)));
+  L.push("");
+  if (sop.purpose){ L.push("PURPOSE"); L.push(sop.purpose); L.push(""); }
+  if (sop.roles && sop.roles.length){ L.push("ROLES: " + sop.roles.join(", ")); L.push(""); }
+  L.push("STEPS");
+  sop.steps.forEach((st, i) => {
+    L.push((i + 1) + ". [" + (st.role || "—") + "] " + st.title);
+    if (st.detail) L.push("   " + st.detail);
+  });
+  if (sop.tips && sop.tips.length){
+    L.push(""); L.push("PRO TIPS");
+    sop.tips.forEach(t => L.push("- " + t));
+  }
+  L.push(""); L.push("— Made with ToastidReady by Toastid Tech");
+  return L.join("\n");
+}
+async function copySOP(){
+  const text = sopPlaintext();
+  try {
+    await navigator.clipboard.writeText(text);
+    toast("SOP copied to clipboard ✓");
+  } catch(e){
+    // Fallback for older browsers / non-secure contexts
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); toast("SOP copied to clipboard ✓"); }
+    catch(e2){ toast("Copy failed — long-press to select manually."); }
+    document.body.removeChild(ta);
+  }
+}
+
+/* ── Refinement chat ───────────────────────────────────────── */
+function chatMsg(who, text){
+  const d = document.createElement("div");
+  d.className = "msg " + who;
+  d.textContent = text;
+  $("msgs").appendChild(d);
+  $("msgs").scrollTop = $("msgs").scrollHeight;
+}
+async function sendRefine(){
+  const input = $("chatInput");
+  const req = input.value.trim();
+  if (!req || state.refining) return;
+  chatMsg("you", req);
+  input.value = "";
+  state.refining = true;
+  chatMsg("ai", "Revising your SOP…");
+  try {
+    const updated = await callAI(REFINE_SYSTEM,
+      "CURRENT SOP JSON:\n" + JSON.stringify(state.sop) + "\n\nREVISION REQUEST:\n" + req);
+    validateSOP(updated);
+    state.sop = updated;
+    state.checked = new Set();
+    renderSOP();
+    $("chatPanel").style.display = "block";
+    chatMsg("ai", "Done — your SOP is updated above.");
+  } catch(err){
+    console.error("[ToastidReady] refine failed:", err);
+    const msgs = $("msgs");
+    if (msgs.lastChild) msgs.removeChild(msgs.lastChild);
+    chatMsg("ai", "Couldn't reach the AI service (" + err.message + "). Try again in a moment.");
+  }
+  state.refining = false;
+}
+
+/* ── Paywall ───────────────────────────────────────────────── */
+let ppRendered = false;
+function openPaywall(){
+  $("payOverlay").classList.add("open");
+  // Lazy-render the PayPal subscribe button the first time the paywall
+  // opens (hidden containers mis-size the button if rendered earlier).
+  if (!ppRendered){
+    ppRendered = true;
+    try {
+      if (!window.paypal) throw new Error("PayPal SDK unavailable");
+      paypal.Buttons({
+        style: { shape: "rect", color: "gold", layout: "vertical", label: "subscribe" },
+        createSubscription: function(data, actions){
+          return actions.subscription.create({ plan_id: "P-67U912464C985111UNKYGCRI" });
+        },
+        onApprove: function(data, actions){
+          try {
+            localStorage.setItem(LS_PAID, JSON.stringify({ ts: new Date().toISOString(), subscriptionID: data.subscriptionID }));
+          } catch(e){}
+          $("payOverlay").classList.remove("open");
+          renderPill();
+          toast("You're subscribed ✓ Unlimited SOPs unlocked.");
+        }
+      }).render("#paypal-button-container-P-67U912464C985111UNKYGCRI");
+    } catch(err){
+      console.error("[ToastidReady] PayPal button failed:", err);
+      $("paypal-button-container-P-67U912464C985111UNKYGCRI").innerHTML =
+        '<p class="sub">Checkout is unavailable right now — check your connection and try again.</p>';
+    }
+  }
+}
+
+/* ── Wire up + init ────────────────────────────────────────── */
+document.addEventListener("DOMContentLoaded", () => {
+  renderPill();
+  renderRoles();
+  wizGo(1);
+
+  $("ctaBuild").addEventListener("click", () => { maybeLeadModal(); startWizard(); });
+  $("ctaBuild2").addEventListener("click", () => { maybeLeadModal(); startWizard(); });
+
+  $("leadSubmit").addEventListener("click", () => {
+    const name = $("leadName").value, email = $("leadEmail").value.trim();
+    if (!name.trim()){ toast("Add your name so we know what to call you."); return; }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ toast("That email doesn't look right."); return; }
+    saveLead(name, email);
+    toast("You're in ✓");
+  });
+  $("leadSkip").addEventListener("click", () => {
+    try { localStorage.setItem(LS_LEAD, JSON.stringify({ skipped: true, ts: new Date().toISOString() })); } catch(e){}
+    $("leadOverlay").classList.remove("open");
+  });
+  // Don't trap keyboard users in the modal
+  $("leadEmail").addEventListener("keydown", e => { if (e.key === "Enter") $("leadSubmit").click(); });
+
+  $("addRole").addEventListener("click", () => { state.roles.push(""); renderRoles(); });
+  $("wizBack").addEventListener("click", () => wizGo(state.wizStep - 1));
+  $("wizNext").addEventListener("click", () => {
+    if (!wizValidate()) return;
+    if (state.wizStep < 3) wizGo(state.wizStep + 1);
+    else generate();
+  });
+
+  $("chatSend").addEventListener("click", sendRefine);
+  $("chatInput").addEventListener("keydown", e => { if (e.key === "Enter") sendRefine(); });
+
+  $("payClose").addEventListener("click", () => $("payOverlay").classList.remove("open"));
+
+  // Service worker (PWA offline support)
+  if ("serviceWorker" in navigator){
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js").catch(err =>
+        console.info("[ToastidReady] SW registration skipped:", err.message));
+    });
+  }
+});
+</script>
 </body>
 </html>
