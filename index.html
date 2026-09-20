@@ -677,6 +677,28 @@ function extractJSON(text){
   return JSON.parse(t.slice(start, end + 1));
 }
 
+// Drops a rejected token and gets a working one. The backend's token store
+// is container-local, so a redeploy (or a fresh task) wipes it — without
+// this, every existing user would 401 on every generate until they cleared
+// site data. If we have a lead email, re-identify so the server re-links it.
+async function recoverToken(){
+  try { localStorage.removeItem(LS_TOKEN); } catch(e){}
+  let lead = null;
+  try { lead = JSON.parse(localStorage.getItem(LS_LEAD) || "null"); } catch(e){}
+  if (lead && lead.email && lead.name && CONFIG.LEAD_PROXY_URL){
+    try {
+      const r = await fetch(CONFIG.LEAD_PROXY_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: lead.name, email: lead.email })
+      });
+      const data = await r.json().catch(() => ({}));
+      if (data && data.token){ setToken(data.token); return data.token; }
+    } catch(e){}
+  }
+  return ensureToken();
+}
+
 async function callAI(system, userContent, _retried){
   const token = await ensureToken();
   const res = await fetch(CONFIG.AI_PROXY_URL, {
@@ -701,6 +723,12 @@ async function callAI(system, userContent, _retried){
     const err = new Error("Free limit reached");
     err.code = "FREE_LIMIT";
     throw err;
+  }
+  if (res.status === 401 && !_retried){
+    // Token unknown to this backend instance — recover and retry once.
+    // (If the retry also 401s it falls through to the generic error below.)
+    await recoverToken();
+    return callAI(system, userContent, true);
   }
   if (!res.ok) throw new Error("Proxy returned HTTP " + res.status);
   const data = await res.json();
