@@ -1,18 +1,18 @@
-# ToastidReady — AI SOP Builder
+# SOPilot — AI SOP Builder
 **by [Toastid Tech LLC](https://toastidtech.com)**
 
 > Turn any business process into a professional Standard Operating Procedure in minutes — powered by AI.
 
 *(Formerly "SOPilot" — rebranded September 2026.)*
 
-[![Live App](https://img.shields.io/badge/Live%20App-ToastidReady-C8943A?style=for-the-badge)](https://toastidtech.github.io/sopilot/)
+[![Live App](https://img.shields.io/badge/Live%20App-SOPilot-C8943A?style=for-the-badge)](https://toastidtech.github.io/sopilot/)
 [![Toastid Tech](https://img.shields.io/badge/Toastid%20Tech-LLC-0F0E0C?style=for-the-badge)](https://toastidtech.com)
 
 ---
 
-## What is ToastidReady?
+## What is SOPilot?
 
-ToastidReady is a Progressive Web App (PWA) that uses AI to generate complete, role-assigned Standard Operating Procedures for small businesses. Owners and managers describe a process in plain English — ToastidReady produces a formatted, interactive SOP document in seconds.
+SOPilot is a Progressive Web App (PWA) that uses AI to generate complete, role-assigned Standard Operating Procedures for small businesses. Owners and managers describe a process in plain English — SOPilot produces a formatted, interactive SOP document in seconds.
 
 ### Who it's for
 - Small business owners who need SOPs but don't have time to write them
@@ -27,7 +27,7 @@ ToastidReady is a Progressive Web App (PWA) that uses AI to generate complete, r
 - **3-Step AI Wizard** — guided intake: process info → roles → details
 - **Role Assignment** — every SOP step is assigned to a specific job title
 - **Interactive Checklist** — tap steps to mark completion; live progress bar
-- **Refinement Chat** — ask ToastidReady to revise, add steps, or change tone
+- **Refinement Chat** — ask SOPilot to revise, add steps, or change tone
 - **Lead Capture** — first-visit name/email modal; syncs to HubSpot when configured, otherwise stored locally (never blocks the app)
 - **Copy to Clipboard** — plaintext export ready to paste anywhere
 - **PWA** — installable on Android/iOS, works offline after first load
@@ -66,8 +66,8 @@ Open `index.html` and fill in the `CONFIG` block at the top of the script (clear
 
 ```
 sopilot/                  # repo name unchanged (GitHub Pages URL stays /sopilot/)
-├── index.html            # Main app (single-file PWA) — ToastidReady build
-├── manifest.json         # PWA manifest (ToastidReady branding)
+├── index.html            # Main app (single-file PWA) — SOPilot build
+├── manifest.json         # PWA manifest (SOPilot branding)
 ├── sw.js                 # Service worker (cache-first, toastidready-v1)
 ├── 404.html              # GitHub Pages SPA routing
 ├── logo-192.png          # PWA icon (192×192)
@@ -122,7 +122,7 @@ and defensively parses the JSON from the response (strips markdown fences if pre
 
 | Plan | Price | Link |
 |---|---|---|
-| ToastidReady | $9.99/mo | *(Sean is creating the payment link — set `PAYMENT_URL` in CONFIG)* |
+| SOPilot | $9.99/mo | *(Sean is creating the payment link — set `PAYMENT_URL` in CONFIG)* |
 
 5 free SOP generations, then the paywall appears. Counter stored in `localStorage` (`toastidready_sop_count`).
 
@@ -135,7 +135,7 @@ and defensively parses the JSON from the response (strips markdown fences if pre
 | [Cope](https://toastidtech.github.io/cope/) | Mental wellness AI chat | ✅ Live |
 | [Micro Habits](https://toastidtech.github.io/micro-habits/) | Habit tracking | ✅ Live |
 | [SentryAI](https://toastidtech.github.io/sentryai/) | AI cybersecurity advisor | 🔜 Coming Soon |
-| [ToastidReady](https://toastidtech.github.io/sopilot/) | AI SOP builder | 🔜 Coming Soon |
+| [SOPilot](https://toastidtech.github.io/sopilot/) | AI SOP builder | 🔜 Coming Soon |
 
 ---
 

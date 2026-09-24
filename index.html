@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>ToastidReady | Toastid Tech</title>
-<meta name="description" content="ToastidReady — turn any business process into a professional, role-assigned Standard Operating Procedure in minutes. Powered by AI." />
+<title>SOPilot | Toastid Tech</title>
+<meta name="description" content="SOPilot — turn any business process into a professional, role-assigned Standard Operating Procedure in minutes. Powered by AI." />
 <meta name="theme-color" content="#0F0E0C" />
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" type="image/png" sizes="192x192" href="logo-192.png" />
@@ -12,7 +12,7 @@
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="ToastidReady" />
+<meta name="apple-mobile-web-app-title" content="SOPilot" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -248,7 +248,7 @@ footer a{color:var(--gold-deep)}
     <div class="hero">
       <span class="eyebrow">AI SOP BUILDER</span>
       <h1>Turn any process into a <em>professional SOP</em> in minutes.</h1>
-      <p class="lede">Describe the way your business runs. ToastidReady drafts a complete, role-assigned Standard Operating Procedure — formatted like a document you'd be proud to hand an auditor.</p>
+      <p class="lede">Describe the way your business runs. SOPilot drafts a complete, role-assigned Standard Operating Procedure — formatted like a document you'd be proud to hand an auditor.</p>
       <div class="cta-row">
         <button class="btn btn-gold" id="ctaBuild">✒ Build my SOP</button>
         <a class="btn btn-line" href="#how">See how it works</a>
@@ -264,7 +264,7 @@ footer a{color:var(--gold-deep)}
     <div class="feat-grid">
       <div class="feat"><h3><span class="dot">✦</span>Role-assigned steps</h3><p>Every step is tagged with the job title responsible. No ambiguity about who does what.</p></div>
       <div class="feat"><h3><span class="dot">✦</span>Interactive checklist</h3><p>Tap steps to mark them done. Watch the progress bar move — built for real execution.</p></div>
-      <div class="feat"><h3><span class="dot">✦</span>Refinement chat</h3><p>Ask ToastidReady to revise, add steps, or change the tone. The document updates instantly.</p></div>
+      <div class="feat"><h3><span class="dot">✦</span>Refinement chat</h3><p>Ask SOPilot to revise, add steps, or change the tone. The document updates instantly.</p></div>
       <div class="feat"><h3><span class="dot">✦</span>Copy anywhere</h3><p>One tap exports clean plaintext — paste into docs, email, or your team wiki.</p></div>
     </div>
 
@@ -344,7 +344,7 @@ footer a{color:var(--gold-deep)}
     <div class="sheet gen">
       <div class="quill">✒</div>
       <h2>Drafting your SOP<span class="dots"></span></h2>
-      <p id="genSub">ToastidReady is writing, assigning roles, and formatting your document.</p>
+      <p id="genSub">SOPilot is writing, assigning roles, and formatting your document.</p>
     </div>
   </section>
 
@@ -365,7 +365,7 @@ footer a{color:var(--gold-deep)}
   </section>
 
   <footer>
-    <div class="fbrand">ToastidReady</div>
+    <div class="fbrand">SOPilot</div>
     <div>by <a href="https://toastidtech.com">Toastid Tech LLC</a> · (479) 339-1504</div>
     <div style="margin-top:6px">© 2026 Toastid Tech LLC. All rights reserved.</div>
   </footer>
@@ -566,9 +566,9 @@ async function saveLead(name, email){
       });
       const data = await r.json().catch(() => ({}));
       if (data && data.token) setToken(data.token);
-      if (!r.ok) console.info("[ToastidReady] Lead proxy returned", r.status);
+      if (!r.ok) console.info("[SOPilot] Lead proxy returned", r.status);
     } catch(err){
-      console.info("[ToastidReady] Lead proxy failed (non-blocking):", err.message);
+      console.info("[SOPilot] Lead proxy failed (non-blocking):", err.message);
     }
   } else if (CONFIG.HUBSPOT_PORTAL_ID && CONFIG.HUBSPOT_FORM_GUID && lead.email){
     const url = `https://api.hsforms.com/submissions/v3/integration/submit/${CONFIG.HUBSPOT_PORTAL_ID}/${CONFIG.HUBSPOT_FORM_GUID}`;
@@ -584,10 +584,10 @@ async function saveLead(name, email){
         context: { pageUri: location.href, pageName: "ToastidReady" }
       })
     }).then(r => {
-      if (!r.ok) console.info("[ToastidReady] HubSpot lead post returned", r.status);
-    }).catch(err => console.info("[ToastidReady] HubSpot lead post failed (non-blocking):", err.message));
+      if (!r.ok) console.info("[SOPilot] HubSpot lead post returned", r.status);
+    }).catch(err => console.info("[SOPilot] HubSpot lead post failed (non-blocking):", err.message));
   } else {
-    console.info("[ToastidReady] Lead saved locally (HubSpot not configured).");
+    console.info("[SOPilot] Lead saved locally (HubSpot not configured).");
   }
 }
 
@@ -648,7 +648,7 @@ function startWizard(){
 }
 
 /* ── AI generation ─────────────────────────────────────────── */
-const GEN_SYSTEM = `You are ToastidReady, an expert SOP (Standard Operating Procedure) writer for small businesses.
+const GEN_SYSTEM = `You are SOPilot, an expert SOP (Standard Operating Procedure) writer for small businesses.
 Return ONLY a single JSON object — no markdown fences, no commentary, no extra text.
 Shape:
 {
@@ -662,7 +662,7 @@ Shape:
 }
 Rules: 6-12 steps. Every step assigned to exactly one role from roles. Concrete, actionable language. Match the requested tone.`;
 
-const REFINE_SYSTEM = `You are ToastidReady, an expert SOP writer.
+const REFINE_SYSTEM = `You are SOPilot, an expert SOP writer.
 You will receive the current SOP as JSON plus a revision request from the user.
 Return the FULL updated SOP as a single JSON object with the exact same shape:
 {"title": "...", "purpose": "...", "roles": ["..."], "steps": [{"role": "...", "title": "...", "detail": "..."}], "tips": ["..."]}
@@ -765,7 +765,7 @@ function showError(title, detail){
 
 async function generate(){
   if (paywalled()){ openPaywall(); return; }
-  $("genSub").textContent = "ToastidReady is writing, assigning roles, and formatting your document.";
+  $("genSub").textContent = "SOPilot is writing, assigning roles, and formatting your document.";
   show("generating");
   $("errSlot").innerHTML = "";
   try {
@@ -777,7 +777,7 @@ async function generate(){
     renderSOP();
   } catch(err){
     if (err && err.code === "FREE_LIMIT") return; // paywall already opened
-    console.error("[ToastidReady] generation failed:", err);
+    console.error("[SOPilot] generation failed:", err);
     showError("AI service unreachable",
       "We couldn't reach the AI service (" + err.message + "). Your answers are safe — fix the connection and try again. No fake content was generated.");
   }
@@ -875,7 +875,7 @@ function sopPlaintext(){
     L.push(""); L.push("PRO TIPS");
     sop.tips.forEach(t => L.push("- " + t));
   }
-  L.push(""); L.push("— Made with ToastidReady by Toastid Tech");
+  L.push(""); L.push("— Made with SOPilot by Toastid Tech");
   return L.join("\n");
 }
 async function copySOP(){
@@ -922,7 +922,7 @@ async function sendRefine(){
     $("chatPanel").style.display = "block";
     chatMsg("ai", "Done — your SOP is updated above.");
   } catch(err){
-    console.error("[ToastidReady] refine failed:", err);
+    console.error("[SOPilot] refine failed:", err);
     const msgs = $("msgs");
     if (msgs.lastChild) msgs.removeChild(msgs.lastChild);
     chatMsg("ai", "Couldn't reach the AI service (" + err.message + "). Try again in a moment.");
@@ -951,14 +951,14 @@ function openPaywall(){
           } catch(e){}
           // Tell the backend this token is paid (unlocks unlimited server-side).
           // If the sync fails, the next generate call retries it automatically.
-          syncPaidToServer().catch(err => console.info("[ToastidReady] paid sync failed (will retry):", err.message));
+          syncPaidToServer().catch(err => console.info("[SOPilot] paid sync failed (will retry):", err.message));
           $("payOverlay").classList.remove("open");
           renderPill();
           toast("You're subscribed ✓ Unlimited SOPs unlocked.");
         }
       }).render("#paypal-button-container-P-67U912464C985111UNKYGCRI");
     } catch(err){
-      console.error("[ToastidReady] PayPal button failed:", err);
+      console.error("[SOPilot] PayPal button failed:", err);
       $("paypal-button-container-P-67U912464C985111UNKYGCRI").innerHTML =
         '<p class="sub">Checkout is unavailable right now — check your connection and try again.</p>';
     }
@@ -988,7 +988,7 @@ document.addEventListener("DOMContentLoaded", () => {
     $("leadOverlay").classList.remove("open");
     // Pre-mint the anonymous entitlement token so the first generate call
     // doesn't pay the token round-trip inside the generation flow.
-    ensureToken().catch(err => console.info("[ToastidReady] token pre-mint failed:", err.message));
+    ensureToken().catch(err => console.info("[SOPilot] token pre-mint failed:", err.message));
   });
   // Don't trap keyboard users in the modal
   $("leadEmail").addEventListener("keydown", e => { if (e.key === "Enter") $("leadSubmit").click(); });
@@ -1010,7 +1010,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if ("serviceWorker" in navigator){
     window.addEventListener("load", () => {
       navigator.serviceWorker.register("sw.js").catch(err =>
-        console.info("[ToastidReady] SW registration skipped:", err.message));
+        console.info("[SOPilot] SW registration skipped:", err.message));
     });
   }
 });

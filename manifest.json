@@ -1,1 +1,25 @@
-{"background_color":"#F5F0E8","description":"ToastidReady by Toastid Tech — turn any business process into a professional, role-assigned Standard Operating Procedure in minutes.","display":"standalone","icons":[{"purpose":"any maskable","sizes":"192x192","src":"logo-192.png","type":"image/png"},{"purpose":"any maskable","sizes":"512x512","src":"logo-512.png","type":"image/png"}],"name":"ToastidReady","orientation":"portrait","scope":"/","short_name":"ToastidReady","start_url":"/","theme_color":"#0F0E0C"}
+{
+  "background_color": "#F5F0E8",
+  "description": "SOPilot by Toastid Tech \u2014 turn any business process into a professional, role-assigned Standard Operating Procedure in minutes.",
+  "display": "standalone",
+  "icons": [
+    {
+      "purpose": "any maskable",
+      "sizes": "192x192",
+      "src": "logo-192.png",
+      "type": "image/png"
+    },
+    {
+      "purpose": "any maskable",
+      "sizes": "512x512",
+      "src": "logo-512.png",
+      "type": "image/png"
+    }
+  ],
+  "name": "SOPilot",
+  "orientation": "portrait",
+  "scope": "/",
+  "short_name": "SOPilot",
+  "start_url": "/",
+  "theme_color": "#0F0E0C"
+}

@@ -63,3 +63,11 @@ git add -A && git commit -m "Rebrand to ToastidReady: full PWA build, \$9.99/mo,
 - `README.md` (rebranded, pricing fixed)
 - `BUILD_NOTES.md` (this file)
 - Unchanged: `logo-192.png`, `logo-512.png`, `.gitignore`
+
+## Revert to SOPilot (2026-09-23)
+Sean asked to restore the **SOPilot** name across the PWA surface and in-app copy.
+Changed: manifest name/short_name, <title>, meta description, apple-mobile-web-app-title,
+hero/features/footer copy, AI system prompts, export footer, console tags, sw.js cache
+(`sopilot-v1`), 404.html, README.
+Deliberately NOT changed (data/backend continuity): API endpoint paths
+(`/api/toastidready-*`), localStorage keys (`toastidready_*`), HubSpot `src`/`pageName` values.

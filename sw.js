@@ -1,8 +1,8 @@
-// ─── ToastidReady Service Worker ──────────────────────────────────────────
-// Toastid Tech LLC · toastidready-v1
+// ─── SOPilot Service Worker ──────────────────────────────────────────
+// Toastid Tech LLC · sopilot-v1
 // Cache-first strategy for offline capability
 
-const CACHE_NAME = 'toastidready-v1';
+const CACHE_NAME = 'sopilot-v1';
 
 const STATIC_ASSETS = [
   '/',
@@ -16,7 +16,7 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       return cache.addAll(STATIC_ASSETS).catch(err => {
-        console.warn('[ToastidReady SW] Pre-cache failed for some assets:', err);
+        console.warn('[SOPilot SW] Pre-cache failed for some assets:', err);
       });
     }).then(() => self.skipWaiting())
   );
@@ -29,7 +29,7 @@ self.addEventListener('activate', event => {
         keys
           .filter(key => key !== CACHE_NAME)
           .map(key => {
-            console.log('[ToastidReady SW] Deleting old cache:', key);
+            console.log('[SOPilot SW] Deleting old cache:', key);
             return caches.delete(key);
           })
       )
