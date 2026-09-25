@@ -942,6 +942,7 @@ async function sendRefine(){
 let ppRendered = false;
 function openPaywall(){
   $("payOverlay").classList.add("open");
+  try { gtag('event', 'begin_checkout', { currency: 'USD', value: 9.99, items: [{ item_name: 'SOPilot Monthly' }] }); } catch(_){}
   // Lazy-render the PayPal subscribe button the first time the paywall
   // opens (hidden containers mis-size the button if rendered earlier).
   if (!ppRendered){
@@ -957,6 +958,7 @@ function openPaywall(){
           try {
             localStorage.setItem(LS_PAID, JSON.stringify({ ts: new Date().toISOString(), subscriptionID: data.subscriptionID }));
           } catch(e){}
+          try { gtag('event', 'purchase', { currency: 'USD', value: 9.99, transaction_id: data.subscriptionID || ('sopilot-' + Date.now()), items: [{ item_name: 'SOPilot Monthly' }] }); } catch(_){}
           // Tell the backend this token is paid (unlocks unlimited server-side).
           // If the sync fails, the next generate call retries it automatically.
           syncPaidToServer().catch(err => console.info("[SOPilot] paid sync failed (will retry):", err.message));
